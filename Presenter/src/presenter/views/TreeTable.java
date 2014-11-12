@@ -397,7 +397,11 @@ public class TreeTable {
 		// for (Object collection : fileList.getCollection()) {
 		// LinkedHashMap collectionMap = (LinkedHashMap) collection;
 		Device device = Display.getCurrent();
-		fileDtlRow.setBackground(device.getSystemColor(SWT.COLOR_CYAN));
+		fileDtlRow.setBackground(device.getSystemColor(SWT.COLOR_TITLE_FOREGROUND));
+		fileDtlRow.setForeground(device.getSystemColor(SWT.COLOR_WHITE));
+		
+		
+		
 		fileDtlRow.setText(FileTableColumnDtl.idIndex,
 				StringUtility.checkIfNullThenEmpty(collectionMap.get("id")));
 		fileDtlRow.setText(FileTableColumnDtl.appIdIndex, StringUtility
@@ -429,7 +433,7 @@ public class TreeTable {
 					StringUtility.checkIfNullThenEmpty(traceMap.get("id")));
 			LinkedHashMap stepMap = (LinkedHashMap) traceMap.get("steps");
 			List stepList = (List) stepMap.get("collection");
-			traceDtlRow.setBackground(device.getSystemColor(SWT.COLOR_GREEN));
+			traceDtlRow.setBackground(device.getSystemColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 			for (Object stepColllection : stepList) {
 				LinkedHashMap step = (LinkedHashMap) stepColllection;
 				TreeItem stepDtlRow = new TreeItem(traceDtlRow, SWT.NONE);
@@ -481,7 +485,7 @@ public class TreeTable {
 		// parent.set);
 		// group.setSize(450, 30);
 		openBtn = new Button(group, SWT.NONE);
-		openBtn.setText("Open Json File");
+		openBtn.setText("Open WIS File");
 		// openBtn.setSize(50, 0);
 		openBtn.setLocation(0, 2);
 		// openBtn.pack();
@@ -515,8 +519,8 @@ public class TreeTable {
 						.getClass()
 						.getClassLoader()
 						.getResourceAsStream(
-								"presenter/views/logoWithCompanyName.png"));
-				e.gc.drawImage(image, 0, 0);
+								"presenter/views/whslogoalpha.png"));
+				e.gc.drawImage(image, -5, 0);
 				// e.gc.drawImage(image, 0, 0, 100, 100, 200, 10, 200, 50);
 			}
 		});
