@@ -17,17 +17,14 @@ public class DeleteDirAndFilesUtil {
 		if (!directory.exists()) {
 
 			logger.info("Directory does not exist.");
-			// System.exit(0);
 
 		} else {
 
 			try {
-
 				delete(directory);
 
 			} catch (IOException e) {
 				logger.error(e);
-				// System.exit(0);
 			}
 		}
 

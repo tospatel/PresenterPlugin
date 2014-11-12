@@ -14,8 +14,6 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
-import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 
 //import customplugin.projects.CustomProjectSupport;
 
@@ -25,7 +23,7 @@ public class CustomProjectNewWizard extends Wizard implements INewWizard,
 	private IConfigurationElement _configurationElement;
 	private static final String PAGE_NAME = "Custom Plug-in Project Wizard";
 	private static final String WIZARD_NAME = "New Custom Plug-in Project";
-	private WizardNewProjectCreationPage _pageOne;
+	// private WizardNewProjectCreationPage _pageOne;
 	private URI location = null;
 	private String filePath;
 
@@ -73,7 +71,7 @@ public class CustomProjectNewWizard extends Wizard implements INewWizard,
 		IProject project = CustomProjectSupport.createProject(location,
 				fileNamePath);
 		// Add this
-		BasicNewProjectResourceWizard.updatePerspective(_configurationElement);
+		// BasicNewProjectResourceWizard.updatePerspective(_configurationElement);
 
 		String destFilePath = CustomProjectSupport.addFileToProject(project,
 				filePath, fileNamePath, selectTreeItem);

@@ -74,9 +74,10 @@ public class FileOperation {
 		String fileExist = "";
 		if (!fileName.isEmpty()) {
 
-			FileExistenanceRecursive fileChecking = new FileExistenanceRecursive();
-			fileChecking.setFileFound(false);
-			fileChecking.setFilePath("");
+			// FileExistenanceRecursive fileChecking = new
+			// FileExistenanceRecursive();
+			// fileChecking.setFileFound(false);
+			// fileChecking.setFilePath("");
 			try {
 				// Get the root of the workspace
 				IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -87,9 +88,9 @@ public class FileOperation {
 				// if (!fileNamePathUpdated) {
 				for (IProject project : projects) {
 
-					fileExist = fileChecking.checkingDirectoryForFile(project
-							.getLocation().toString(), 0,
-							fileName.substring(fileName
+					fileExist = FileExistenanceRecursive
+							.checkingDirectoryForFile(project.getLocation()
+									.toString(), fileName.substring(fileName
 									.lastIndexOf(File.separator) + 1));
 					if (fileExist != null
 							&& (!fileExist.isEmpty())
@@ -239,8 +240,14 @@ public class FileOperation {
 				try {
 
 					if (lineSize == 0) {
-						map.put(IMarker.LINE_NUMBER, 0);
+
 						marker = fileToBeOpened.createMarker(IMarker.PROBLEM);
+						map.put(IMarker.LINE_NUMBER, 1);
+						map.put(IMarker.CHAR_START, 0);
+						map.put(IMarker.CHAR_END, 0);
+						map.put(IMarker.MESSAGE, PropertyFileUtil.getProp()
+								.getProperty("lineMatchFail"));
+						map.put(IMarker.TRANSIENT, true);
 					} else {
 						marker = fileToBeOpened.createMarker(IMarker.PROBLEM);
 						map.put(IMarker.LINE_NUMBER, lineNoList.get(0));
@@ -272,6 +279,7 @@ public class FileOperation {
 				// IDE.gotoMarker(editor, marker2);
 				// marker.delete();
 				if (lineSize == 0) {
+					// findDeleteMarkers();
 					MessageBoxView.show(PropertyFileUtil.getProp().getProperty(
 							"lineMatchFail"));
 				} else {
@@ -319,8 +327,8 @@ public class FileOperation {
 		if (!fileNamePath.get(rowSelectedFileName).isEmpty()) {
 			filePath = fileNamePath.get(rowSelectedFileName);
 		} else {
-			filePath = FileExistenanceRecursive.checkFileInDirectories(
-					fileNamePath.get(AppConstant.folderTextFieldName), 0,
+			filePath = FileExistenanceRecursive.checkingDirectoryForFile(
+					fileNamePath.get(AppConstant.folderTextFieldName),
 					rowSelectedFileName);
 		}
 		if (filePath != null && (!filePath.isEmpty())) {
@@ -409,21 +417,42 @@ public class FileOperation {
 
 				contentMatchLineNoList = new ArrayList<Integer>();
 				int row = 0;
-				for (String contentCheck : contentList) {
-					// logger.info(trimLine(contentCheck)
-					// + " test  " +trimLine(lineContent)+ " cond  "
-					// + trimLine(contentCheck).equals(
-					// trimLine(lineContent)));
-					if (trimLine(contentCheck)
-							.startsWith(trimLine(lineContent))) { // Change done
-																	// by sunil
-																	// searching
-																	// content
-						contentMatchLineNoList.add(row + 1);
-						break;
+
+				int startLine = getIntForStringData(selectTreeItem
+						.getText(FileTableColumnDtl.startLineIndex));
+
+				int totalLineCheck = getIntForStringData(PropertyFileUtil
+						.getProp()
+						.getProperty("totalLineCheckingBeforeOrAfter"));
+
+				int lineStartChecking = startLine - totalLineCheck;
+
+				if (lineStartChecking > 0) {
+					for (row = lineStartChecking; row < (startLine + totalLineCheck); row++) {
+						if (trimLine(contentList.get(row)).startsWith(
+								trimLine(lineContent))) {
+							contentMatchLineNoList.add(row + 1);
+							break;
+						}
 					}
-					row++;
 				}
+
+				// contentList
+				// for (String contentCheck : contentList) {
+				// // logger.info(trimLine(contentCheck)
+				// // + " test  " +trimLine(lineContent)+ " cond  "
+				// // + trimLine(contentCheck).equals(
+				// // trimLine(lineContent)));
+				// if (trimLine(contentCheck)
+				// .startsWith(trimLine(lineContent))) { // Change done
+				// // by sunil
+				// // searching
+				// // content
+				// contentMatchLineNoList.add(row + 1);
+				// break;
+				// }
+				// row++;
+				// }
 				logger.info("Find Content " + trimLine(lineContent));
 				// }
 			}
@@ -969,13 +998,14 @@ public class FileOperation {
 
 		if (!fileName.isEmpty()) {
 
-			FileExistenanceRecursive fileChecking = new FileExistenanceRecursive();
-			fileChecking.setFileFound(false);
-			fileChecking.setFilePath("");
+			// FileExistenanceRecursive fileChecking = new
+			// FileExistenanceRecursive();
+			// fileChecking.setFileFound(false);
+			// fileChecking.setFilePath("");
 			// Get the root of the workspace
 
-			final String fileExist = fileChecking.checkingDirectoryForFile(
-					dirPath, 0, fileName);
+			final String fileExist = FileExistenanceRecursive
+					.checkingDirectoryForFile(dirPath, fileName);
 			Display.getDefault().syncExec(new Runnable() {
 				public void run() {
 					List<Object> lineContent = getCodeForMatching(

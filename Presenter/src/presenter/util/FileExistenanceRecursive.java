@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javaxt.io.Directory;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -14,8 +16,9 @@ import org.apache.log4j.Logger;
 public class FileExistenanceRecursive {
 	final static Logger logger = Logger
 			.getLogger(FileExistenanceRecursive.class);
-	boolean fileFound = false;
-	String filePath = "";
+
+	// boolean fileFound = false;
+	// String filePath = "";
 
 	/**
 	 * Populating File Path
@@ -25,48 +28,49 @@ public class FileExistenanceRecursive {
 	 * @param fileCheck
 	 * @return
 	 */
-
-	public String checkingDirectoryForFile(String dirPath, int level,
+	public static String checkingDirectoryForFile(String dirPath,
 			String fileCheck) {
-		logger.info("=====================Dir Path " + dirPath);
-		File dir = new File(dirPath);
-		File[] firstLevelFiles = dir.listFiles();
-		if (firstLevelFiles != null && firstLevelFiles.length > 0) {
-			for (File aFile : firstLevelFiles) {
-				for (int i = 0; i < level; i++) {
-					System.out.print("\t");
-				}
-				if (aFile.isDirectory()) {
-					// logger.info("[" + aFile.getName() + "]");
-					if ((!aFile.getName().equals("bin"))
-							&& (!aFile.getName().equals("classes"))
-							&& (!aFile.getName().equals("lib"))) {
-						String fileExist = checkingDirectoryForFile(
-								aFile.getAbsolutePath(), level + 1, fileCheck);
 
-						if (fileExist != null && (!fileExist.isEmpty())) {
-							return fileExist;
-						}
+		boolean recursiveSearch = true;
+		Object fileFilter = new String(fileCheck);
+		boolean wait = false;
+		javaxt.io.Directory directory = new Directory(dirPath);
+		// Initiate search
+		java.util.List results = directory.getChildren(recursiveSearch,
+				fileFilter, wait);
+		while (true) {
+			Object item;
+			synchronized (results) {
+
+				// Wait for files/directories to be added to the list
+				while (results.isEmpty()) {
+					try {
+						results.wait();
+					} catch (InterruptedException e) {
+						break;
 					}
+				}
+
+				// Grab the next available file/directory from the list
+				item = results.remove(0);
+				results.notifyAll();
+			}
+
+			// Do something with the file/directory
+			if (item != null) {
+
+				if (item instanceof javaxt.io.File) {
+					javaxt.io.File file = (javaxt.io.File) item;
+					logger.info("File Found " + file.toString());
+					return file.toString();
 				} else {
-					// fileExist = fileCheck.equals(aFile.getName());
-					logger.info(aFile.getName());
-					if (fileCheck.equals(aFile.getName()) && fileFound == false) {
-						fileFound = true;
-						// filePath = aFile.getAbsolutePath();
-						// logger.info(aFile.getName() + " fileExist "
-						// + aFile.getAbsolutePath());
-						filePath = aFile.getPath();
-
-						logger.info(aFile.getName() + " fileExist "
-								+ aFile.getAbsolutePath());
-						return filePath;
-					}
+					javaxt.io.Directory dir = (javaxt.io.Directory) item;
 				}
+			} else { // Item is null. This is our queue that the search is done!
+				break;
 			}
 		}
-
-		return filePath;
+		return "";
 	}
 
 	/**
@@ -130,65 +134,106 @@ public class FileExistenanceRecursive {
 		return fileCheck;
 	}
 
-	public static String checkFileInDirectories(String dirPath, int level,
-			String fileName) {
-		logger.info("====Checking Dir Path " + dirPath + " for filename "
-				+ fileName);
-		File dir = new File(dirPath);
-		File[] firstLevelFiles = dir.listFiles();
-		String path = "";
-		if (firstLevelFiles != null && firstLevelFiles.length > 0) {
-			for (File aFile : firstLevelFiles) {
-				for (int i = 0; i < level; i++) {
-					System.out.print("\t");
-				}
-				if (aFile.isDirectory()) {
-					// logger.info("[" + aFile.getName() + "]");
-					if ((!aFile.getName().equals("bin"))
-							&& (!aFile.getName().equals("classes"))
-							&& (!aFile.getName().equals("lib"))) {
-						String fileExist = checkFileInDirectories(
-								aFile.getAbsolutePath(), level + 1, fileName);
-						if (fileExist != null && (!fileExist.isEmpty())) {
-							return fileExist;
-						}
-					}
-				} else {
-					// fileExist = fileCheck.equals(aFile.getName());
-					// logger.info(""+aFile.getName());
-					if (fileName.equals(aFile.getName())) {
+	// public static String checkFileInDirectories(String dirPath, int level,
+	// String fileName) {
+	// logger.info("====Checking Dir Path " + dirPath + " for filename "
+	// + fileName);
+	// File dir = new File(dirPath);
+	// File[] firstLevelFiles = dir.listFiles();
+	// String path = "";
+	// if (firstLevelFiles != null && firstLevelFiles.length > 0) {
+	// for (File aFile : firstLevelFiles) {
+	// for (int i = 0; i < level; i++) {
+	// System.out.print("\t");
+	// }
+	// if (aFile.isDirectory()) {
+	// // logger.info("[" + aFile.getName() + "]");
+	// if ((!aFile.getName().equals("bin"))
+	// && (!aFile.getName().equals("classes"))
+	// && (!aFile.getName().equals("lib"))) {
+	// String fileExist = checkFileInDirectories(
+	// aFile.getAbsolutePath(), level + 1, fileName);
+	// if (fileExist != null && (!fileExist.isEmpty())) {
+	// return fileExist;
+	// }
+	// }
+	// } else {
+	//
+	// if (fileName.equals(aFile.getName())) {
+	//
+	//
+	// path = aFile.getPath();
+	//
+	// logger.info(aFile.getName() + " fileExist "
+	// + aFile.getAbsolutePath());
+	// // break;
+	// return path;
+	// }
+	// }
+	// }
+	// }
+	//
+	// return path;
+	// }
 
-						// filePath = aFile.getAbsolutePath();
-						// logger.info(aFile.getName() + " fileExist "
-						// + aFile.getAbsolutePath());
-						path = aFile.getPath();
-
-						logger.info(aFile.getName() + " fileExist "
-								+ aFile.getAbsolutePath());
-						// break;
-						return path;
-					}
-				}
-			}
-		}
-
-		return path;
-	}
-
-	public boolean isFileFound() {
-		return fileFound;
-	}
-
-	public void setFileFound(boolean fileFound) {
-		this.fileFound = fileFound;
-	}
-
-	public String isFilePath() {
-		return filePath;
-	}
-
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
-	}
+	// public String checkingDirectoryForFile(String dirPath, int level,
+	// String fileCheck) {
+	// logger.info("=====================Dir Path " + dirPath);
+	// File dir = new File(dirPath);
+	// File[] firstLevelFiles = dir.listFiles();
+	// if (firstLevelFiles != null && firstLevelFiles.length > 0) {
+	// for (File aFile : firstLevelFiles) {
+	// for (int i = 0; i < level; i++) {
+	// System.out.print("\t");
+	// }
+	// if (aFile.isDirectory()) {
+	// // logger.info("[" + aFile.getName() + "]");
+	// if ((!aFile.getName().equals("bin"))
+	// && (!aFile.getName().equals("classes"))
+	// && (!aFile.getName().equals("lib"))) {
+	// String fileExist = checkingDirectoryForFile(
+	// aFile.getAbsolutePath(), level + 1, fileCheck);
+	//
+	// if (fileExist != null && (!fileExist.isEmpty())) {
+	// return fileExist;
+	// }
+	// }
+	// } else {
+	// // fileExist = fileCheck.equals(aFile.getName());
+	// logger.info(aFile.getName());
+	// if (fileCheck.equals(aFile.getName()) && fileFound == false) {
+	// fileFound = true;
+	// // filePath = aFile.getAbsolutePath();
+	// // logger.info(aFile.getName() + " fileExist "
+	// // + aFile.getAbsolutePath());
+	// filePath = aFile.getPath();
+	//
+	// logger.info(aFile.getName() + " fileExist "
+	// + aFile.getAbsolutePath());
+	// return filePath;
+	// }
+	// }
+	// }
+	// }
+	//
+	// return filePath;
+	// }
+	//
+	//
+	// public boolean isFileFound() {
+	// return fileFound;
+	// }
+	//
+	// public void setFileFound(boolean fileFound) {
+	// this.fileFound = fileFound;
+	// }
+	//
+	// public String isFilePath() {
+	// return filePath;
+	// }
+	//
+	// public void setFilePath(String filePath) {
+	// this.filePath = filePath;
+	// }
 
 }

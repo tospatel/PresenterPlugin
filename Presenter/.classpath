@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="lib/javaxt-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/json-simple-1.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/json-lib.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/flexjson-2.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/gson-2.2.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/org.eclipse.ui.ide_3.7.0.v20110809-1737.jar/org.eclipse.ui.ide_3.7.0.v20110809-1737.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/customproject/dom4j-1.6.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/log4j.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/org.eclipse.swt-3.1.jar"/>

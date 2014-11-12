@@ -24,9 +24,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -40,7 +37,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -168,70 +164,25 @@ public class TreeTable {
 		// new Sash(parent, SWT.HORIZONTAL);
 	}
 
-	private void setSplitter1(Composite parent) {
-		// parent.setLayout(new FillLayout());
-		new Text(parent, SWT.BORDER);
-		new Sash(parent, SWT.HORIZONTAL);
-		// new Text(parent, SWT.BORDER);
-	}
-
-	private void setSplitter(Composite parent) {
-		final Sash sash = new Sash(parent, SWT.VERTICAL);
-		final FormLayout form = new FormLayout();
-		parent.setLayout(form);
-		FormData button1Data = new FormData();
-		button1Data.left = new FormAttachment(0, 0);
-		button1Data.right = new FormAttachment(sash, 0);
-		button1Data.top = new FormAttachment(0, 0);
-		button1Data.bottom = new FormAttachment(100, 0);
-		tree.setLayoutData(button1Data);
-
-		final int limit = 20, percent = 50;
-		final FormData sashData = new FormData();
-		sashData.left = new FormAttachment(percent, 0);
-		sashData.top = new FormAttachment(0, 0);
-		sashData.bottom = new FormAttachment(100, 0);
-		sash.setLayoutData(sashData);
-		// sash.addListener(SWT.Selection, new Listener() {
-		// public void handleEvent(Event e) {
-		// Rectangle sashRect = sash.getBounds();
-		// Rectangle shellRect = parent.getClientArea();
-		// int right = shellRect.width - sashRect.width - limit;
-		// e.x = Math.max(Math.min(e.x, right), limit);
-		// if (e.x != sashRect.x) {
-		// sashData.left = new FormAttachment(0, e.x);
-		// parent.layout();
-		// }
-		// }
-		// });
-
-		FormData button2Data = new FormData();
-		button2Data.left = new FormAttachment(sash, 0);
-		button2Data.right = new FormAttachment(100, 0);
-		button2Data.top = new FormAttachment(0, 0);
-		button2Data.bottom = new FormAttachment(100, 0);
-		tabFolder.setLayoutData(button2Data);
-	}
-
 	public void setSnippet(Composite parent) {
 		tabFolder = new TabFolder(parent, SWT.BORDER);
-		for (int loopIndex = 0; loopIndex < 5; loopIndex++) {
+		for (int loopIndex = 0; loopIndex < 3; loopIndex++) {
 			TabItem tabItem = new TabItem(tabFolder, SWT.NULL);
 			String header = "";
 			switch (loopIndex) {
 			case 0:
 				header = "Snippet";
 				break;
+			// case 1:
+			// header = "Live";
+			// break;
+			// case 2:
+			// header = "Diff";
+			// break;
 			case 1:
-				header = "Live";
-				break;
-			case 2:
-				header = "Diff";
-				break;
-			case 3:
 				header = "Description";
 				break;
-			case 4:
+			case 2:
 				header = "Solution";
 				break;
 			}
@@ -397,11 +348,10 @@ public class TreeTable {
 		// for (Object collection : fileList.getCollection()) {
 		// LinkedHashMap collectionMap = (LinkedHashMap) collection;
 		Device device = Display.getCurrent();
-		fileDtlRow.setBackground(device.getSystemColor(SWT.COLOR_TITLE_FOREGROUND));
+		fileDtlRow.setBackground(device
+				.getSystemColor(SWT.COLOR_TITLE_FOREGROUND));
 		fileDtlRow.setForeground(device.getSystemColor(SWT.COLOR_WHITE));
-		
-		
-		
+
 		fileDtlRow.setText(FileTableColumnDtl.idIndex,
 				StringUtility.checkIfNullThenEmpty(collectionMap.get("id")));
 		fileDtlRow.setText(FileTableColumnDtl.appIdIndex, StringUtility
@@ -433,7 +383,8 @@ public class TreeTable {
 					StringUtility.checkIfNullThenEmpty(traceMap.get("id")));
 			LinkedHashMap stepMap = (LinkedHashMap) traceMap.get("steps");
 			List stepList = (List) stepMap.get("collection");
-			traceDtlRow.setBackground(device.getSystemColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
+			traceDtlRow.setBackground(device
+					.getSystemColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 			for (Object stepColllection : stepList) {
 				LinkedHashMap step = (LinkedHashMap) stepColllection;
 				TreeItem stepDtlRow = new TreeItem(traceDtlRow, SWT.NONE);
@@ -515,11 +466,11 @@ public class TreeTable {
 		Canvas canvas = new Canvas(group, SWT.NONE);
 		canvas.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
-				Image image = new Image(e.display, this
-						.getClass()
-						.getClassLoader()
-						.getResourceAsStream(
-								"presenter/views/whslogoalpha.png"));
+				Image image = new Image(e.display,
+						this.getClass()
+								.getClassLoader()
+								.getResourceAsStream(
+										"presenter/views/whslogoalpha.png"));
 				e.gc.drawImage(image, -5, 0);
 				// e.gc.drawImage(image, 0, 0, 100, 100, 200, 10, 200, 50);
 			}
@@ -782,7 +733,7 @@ public class TreeTable {
 					// + "alert(aa);"
 					+ "document.write(aa);" + "</script>";
 		}
-		Browser browseDesc = tabItemList.get(3);
+		Browser browseDesc = tabItemList.get(1);
 
 		// browseDesc.setText("<pre>"
 		// + selectTreeItem.getText(FileTableColumnDtl.descriptionIndex)
@@ -803,7 +754,7 @@ public class TreeTable {
 		// or I used a shortcut to use Javascript to decode and display them on
 		// the page
 
-		Browser browseSolution = tabItemList.get(4);
+		Browser browseSolution = tabItemList.get(2);
 		// browseSolution.setText("<pre>"
 		// + selectTreeItem.getText(FileTableColumnDtl.solutionIndex)
 		// .replace("\n", "<br/>") + "<pre/>");
