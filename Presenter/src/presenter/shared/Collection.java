@@ -9,7 +9,7 @@ public class Collection {
 	private String class_readable;
 	private String closed;
 	private String compliance;
-	private Dast_classes dast_classes;
+	// private Dast_classes dast_classes;
 	private String description;
 	private String first_opened;
 	private String found;
@@ -80,13 +80,13 @@ public class Collection {
 		this.compliance = compliance;
 	}
 
-	public Dast_classes getDast_classes() {
-		return this.dast_classes;
-	}
-
-	public void setDast_classes(Dast_classes dast_classes) {
-		this.dast_classes = dast_classes;
-	}
+	// public Dast_classes getDast_classes() {
+	// return this.dast_classes;
+	// }
+	//
+	// public void setDast_classes(Dast_classes dast_classes) {
+	// this.dast_classes = dast_classes;
+	// }
 
 	public String getDescription() {
 		return this.description;
