@@ -690,7 +690,7 @@ public class FileOperation {
 					int startLineChecking = line - totalLineCheck;
 					int endLine = line + totalLineCheck;
 
-					if (startLineChecking > 0 && fileSize < endLine) {
+					if (startLineChecking > 0 && endLine < fileSize) {
 
 						for (int row = startLineChecking; row < endLine; row++) {
 							if (trimLine(contentList.get(row)).startsWith(
