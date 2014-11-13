@@ -119,26 +119,22 @@ public class TreeTable {
 		createGroupFields(composite);
 		Label separator = new Label(composite, SWT.VERTICAL | SWT.SEPARATOR);
 		separator.setLayoutData(new GridData(SWT.None, SWT.FILL, false, true,
-				1, 2));
+				1, 3));
 		setSnippet(parent);
-		// Create a horizontal separator
 
-		// composite
-		// GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL
-		// | GridData.FILL_BOTH);
-		// composite.setLayoutData(gridData);
 		GridLayout layout = new GridLayout(3, false);
-		// layout.marginWidth = 2;
 		composite.setLayout(layout);
 
 		setTableLayout(composite);
 
+		Label version = new Label(composite, SWT.RIGHT);
+		version.setText(getVersionAndDate());
+		version.setLayoutData(new GridData(SWT.FILL, SWT.None, true, false, 1,
+				1));
+
 		setTableColumn();
 		createListner();
 		openPreviousJsonFile();
-		// setSplitter1(composite);
-		// createTable(composite);
-		// setSplitter(composite);
 	}
 
 	/**
@@ -157,7 +153,7 @@ public class TreeTable {
 		// gridData.minimumWidth = 200;
 		// gridData.minimumHeight = 200;
 		// tree.setLayoutData(gridData);
-		tree.setLayoutData(new GridData(SWT.None, SWT.FILL, false, true, 1, 1));
+		tree.setLayoutData(new GridData(SWT.None, SWT.FILL, false, true, 1, 2));
 		tree.setHeaderVisible(true);
 		tree.setLinesVisible(true);
 		// tree.setSize(200, 250);
@@ -783,5 +779,9 @@ public class TreeTable {
 			createTable(parent);
 
 		}
+	}
+
+	public String getVersionAndDate() {
+		return PropertyFileUtil.getProp().getProperty("version");
 	}
 }
