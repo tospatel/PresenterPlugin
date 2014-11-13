@@ -1,13 +1,9 @@
 package presenter.util;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -418,41 +414,22 @@ public class FileOperation {
 				contentMatchLineNoList = new ArrayList<Integer>();
 				int row = 0;
 
-				int startLine = getIntForStringData(selectTreeItem
-						.getText(FileTableColumnDtl.startLineIndex));
-
-				int totalLineCheck = getIntForStringData(PropertyFileUtil
-						.getProp()
-						.getProperty("totalLineCheckingBeforeOrAfter"));
-
-				int lineStartChecking = startLine - totalLineCheck;
-
-				if (lineStartChecking > 0) {
-					for (row = lineStartChecking; row < (startLine + totalLineCheck); row++) {
-						if (trimLine(contentList.get(row)).startsWith(
-								trimLine(lineContent))) {
-							contentMatchLineNoList.add(row + 1);
-							break;
-						}
-					}
-				}
-
 				// contentList
-				// for (String contentCheck : contentList) {
-				// // logger.info(trimLine(contentCheck)
-				// // + " test  " +trimLine(lineContent)+ " cond  "
-				// // + trimLine(contentCheck).equals(
-				// // trimLine(lineContent)));
-				// if (trimLine(contentCheck)
-				// .startsWith(trimLine(lineContent))) { // Change done
-				// // by sunil
-				// // searching
-				// // content
-				// contentMatchLineNoList.add(row + 1);
-				// break;
-				// }
-				// row++;
-				// }
+				for (String contentCheck : contentList) {
+					// logger.info(trimLine(contentCheck)
+					// + " test  " +trimLine(lineContent)+ " cond  "
+					// + trimLine(contentCheck).equals(
+					// trimLine(lineContent)));
+					if (trimLine(contentCheck)
+							.startsWith(trimLine(lineContent))) { // Change done
+						// by sunil
+						// searching
+						// content
+						contentMatchLineNoList.add(row + 1);
+						break;
+					}
+					row++;
+				}
 				logger.info("Find Content " + trimLine(lineContent));
 				// }
 			}
@@ -687,10 +664,11 @@ public class FileOperation {
 		// int contentMatchLineNo = 0;
 		List<Integer> contentMatchLineNoList = null;
 		try {
+			int fileSize = contentList.size();
 
 			if (line >= 0) {
 
-				if (line > 0 && contentList.size() >= line) {
+				if (line > 0 && fileSize >= line) {
 					line = line - 1;
 				} else {
 					line = 0;
@@ -703,8 +681,28 @@ public class FileOperation {
 				// if (trimLine(contentByLine).equals(trimLine(lineContent))) {
 				if (trimLine(contentByLine).startsWith(trimLine(lineContent))) {
 					contentMatchLineNoList.add(line + 1);
-				}// Comment by sunil
-					// else {
+				} else {
+
+					int totalLineCheck = getIntForStringData(PropertyFileUtil
+							.getProp().getProperty(
+									"totalLineCheckingBeforeOrAfter"));
+
+					int startLineChecking = line - totalLineCheck;
+					int endLine = line + totalLineCheck;
+
+					if (startLineChecking > 0 && fileSize < endLine) {
+
+						for (int row = startLineChecking; row < endLine; row++) {
+							if (trimLine(contentList.get(row)).startsWith(
+									trimLine(lineContent))) {
+								contentMatchLineNoList.add(row + 1);
+								break;
+							}
+						}
+					}
+				}
+				// Comment by sunil
+				// else {
 				// // Prabhu: try fuzzy search
 				// String pattern = trimLine(lineContent);
 				// // String text = fileContent.
@@ -858,224 +856,4 @@ public class FileOperation {
 		return null;
 	}
 
-	public static int singleLineContentMatch(List<String> contentList,
-			boolean nextLineFlag, int lineCheckingStart, String lineContent) {
-
-		int contentMatchLineNo = 0;
-
-		try {
-			String lineContentCheck = contentList.get(lineCheckingStart);
-			int index = lineCheckingStart;
-
-			while (lineContentCheck != null) {
-
-				lineContentCheck = removeSpecialCharacter(contentList
-						.get(index));
-
-				if (lineContentCheck.equals(lineContent)) {
-					++index;
-					return index;
-				}
-
-				if (nextLineFlag) {
-					index++;
-				} else {
-					index--;
-				}
-			}
-
-		} catch (IndexOutOfBoundsException ie) {
-			logger.error(ie);
-		} catch (Exception e) {
-			logger.error(e);
-		}
-		return contentMatchLineNo;
-	}
-
-	public static List<Integer> multiLineContentMatch(List<String> contentList,
-			boolean nextLineFlag, int lineCheckingStart, String lineContent,
-			Map<Boolean, Set<String>> multipLineContent) {
-
-		List<Integer> contentMatchLineNoList = new ArrayList<Integer>();
-
-		try {
-
-			String lineContentCheck = contentList.get(lineCheckingStart);
-
-			int index = lineCheckingStart;
-			int contentSize = contentList.size();
-			while (lineContentCheck != null) {
-
-				if (nextLineFlag) {
-					index++;
-				} else {
-					index--;
-				}
-
-				if (index >= 0 && index < contentSize) {
-					lineContentCheck = removeSpecialCharacter(contentList
-							.get(index));
-
-					int line = checkCodeExistance(contentList, index,
-							multipLineContent.get(true));
-
-					if (line != 0) {
-						contentMatchLineNoList.add(line);
-					}
-
-				} else {
-					break;
-				}
-
-			}
-			if (contentMatchLineNoList.size() > 1) {
-				Collections.sort(contentMatchLineNoList);
-			}
-
-		} catch (IndexOutOfBoundsException ie) {
-			logger.error(ie);
-		} catch (Exception e) {
-			logger.error(e);
-		}
-
-		return contentMatchLineNoList;
-	}
-
-	public static Map<Boolean, Set<String>> checkMultiLineExist(
-			String lineContent) {
-
-		Map<Boolean, Set<String>> multipLineContent = new HashMap<Boolean, Set<String>>();
-		Set<String> codelist = new HashSet<String>();
-
-		if (lineContent != null || !lineContent.isEmpty()) {
-			String[] codeContent = lineContent.split(";");
-
-			for (String code : codeContent) {
-				codelist.add(code + ";");
-			}
-
-			multipLineContent.put((codelist.size() > 1 ? true : false),
-					codelist);
-		} else {
-			codelist.add(lineContent);
-			multipLineContent.put(false, codelist);
-		}
-
-		return multipLineContent;
-	}
-
-	public static List<Integer> getOrderedList(List<Integer> contentList) {
-		List<Integer> orderContentList = new ArrayList<Integer>();
-		boolean orderFlag = false;
-		for (int index = 0; index < contentList.size();) {
-			if (index + 1 < contentList.size()) {
-				if (contentList.get(index).equals(contentList.get(++index) - 1)) {
-					if (orderFlag) {
-						orderContentList.add(contentList.get(index));
-					} else {
-						orderContentList.add(contentList.get(index - 1));
-						orderContentList.add(contentList.get(index));
-					}
-					orderFlag = true;
-				} else {
-					if (orderFlag) {
-						break;
-					}
-
-					orderFlag = false;
-				}
-			} else if (index + 1 == contentList.size()) {
-				break;
-			}
-		}
-
-		return orderContentList;
-	}
-
-	public static void checkFileExistenance(final IWorkbenchPage wbPage,
-			final String dirPath, String fileName, final int line,
-			final String lineContent, final TreeItem selectTreeItem) {
-
-		if (!fileName.isEmpty()) {
-
-			// FileExistenanceRecursive fileChecking = new
-			// FileExistenanceRecursive();
-			// fileChecking.setFileFound(false);
-			// fileChecking.setFilePath("");
-			// Get the root of the workspace
-
-			final String fileExist = FileExistenanceRecursive
-					.checkingDirectoryForFile(dirPath, fileName);
-			Display.getDefault().syncExec(new Runnable() {
-				public void run() {
-					List<Object> lineContent = getCodeForMatching(
-							selectTreeItem, line);
-					FileOperation.loadFile(dirPath, fileExist,
-							Integer.parseInt(lineContent.get(1).toString()),
-							lineContent.get(0).toString(), selectTreeItem);
-
-				}
-			});
-
-		} else {
-			MessageBoxView.show("fileName is empty");
-		}
-	}
-
-	// public static void openExternalfile(File fileToOpen) {
-	// try {
-	// logger.info("Start openExternalfile");
-	// // File file = new File(fileToOpen);
-	// IFileStore fileOnLocalDisk = EFS.getLocalFileSystem().getStore(
-	// fileToOpen.toURI());
-	// FileStoreEditorInput editorInput = new FileStoreEditorInput(
-	// fileOnLocalDisk);
-	//
-	// IWorkbenchWindow window = PlatformUI.getWorkbench()
-	// .getActiveWorkbenchWindow();
-	// IWorkbenchPage page = window.getActivePage();
-	// // this works fine
-	// page.openEditor(editorInput, "org.eclipse.ui.DefaultTextEditor");
-	//
-	// // this is where the issue is
-	// page.openEditor(editorInput, "MyEditor.editor");
-	// logger.info("End openExternalfile");
-	// } catch (PartInitException e) {
-	// // TODO Auto-generated catch block
-	// logger.error(e);
-	// }
-	// // File fileToOpen = new File("externalfile.xml");
-	//
-	// if (fileToOpen.exists() && fileToOpen.isFile()) {
-	// IFileStore fileStore = EFS.getLocalFileSystem().getStore(
-	// fileToOpen.toURI());
-	// IWorkbenchPage page = PlatformUI.getWorkbench()
-	// .getActiveWorkbenchWindow().getActivePage();
-	//
-	// try {
-	// IDE.openEditorOnFileStore(page, fileStore);
-	// } catch (PartInitException e) {
-	// System.out.println(e.getMessage());
-	// }
-	// } else {
-	// // Do something if the file does not exist
-	// }
-	// }
-
-	public static String readFile(String fileName) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(fileName));
-		try {
-			StringBuilder sb = new StringBuilder();
-			String line = br.readLine();
-
-			while (line != null) {
-				sb.append(line);
-				sb.append("\n");
-				line = br.readLine();
-			}
-			return sb.toString();
-		} finally {
-			br.close();
-		}
-	}
 }
