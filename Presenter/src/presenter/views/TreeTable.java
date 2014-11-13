@@ -147,17 +147,12 @@ public class TreeTable {
 		int style = SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER;
 		tree = new Tree(parent, style);
 		GridData gridData = new GridData(GridData.FILL_BOTH); // new
-		// GridData(GridData.FILL_BOTH);
 		gridData.grabExcessVerticalSpace = true;
-		// gridData.horizontalSpan = 2;
-		// gridData.minimumWidth = 200;
-		// gridData.minimumHeight = 200;
-		// tree.setLayoutData(gridData);
+
 		tree.setLayoutData(new GridData(SWT.None, SWT.FILL, false, true, 1, 2));
 		tree.setHeaderVisible(true);
 		tree.setLinesVisible(true);
-		// tree.setSize(200, 250);
-		// new Sash(parent, SWT.HORIZONTAL);
+
 	}
 
 	public void setSnippet(Composite parent) {
@@ -189,19 +184,12 @@ public class TreeTable {
 			browser.setText("");
 			tabItem.setControl(browser);
 			tabItemList.add(browser);
-			// Text text = new Text(tabFolder, SWT.BORDER);
-			// text.setText("This is page " + loopIndex);
-			// tabItem.setControl(text);
+
 		}
 
-		// tabFolder.setSize(400, 250);
 		GridData gridData = new GridData(GridData.FILL_BOTH); // new
-		// GridData(GridData.FILL_BOTH);
 		gridData.grabExcessVerticalSpace = true;
-		// gridData.horizontalSpan = 2;
-		// gridData.minimumWidth = 400;
-		// gridData.minimumHeight = 200;
-		// tabFolder.setLayoutData(gridData);
+
 		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1,
 				2));
 	}
@@ -277,28 +265,9 @@ public class TreeTable {
 							}
 
 						}
-						// final int totalFileSize = fileList.size();
-						// for (int index = 0; index < totalFileSize; index +=
-						// 10) {
-						// final int indx = index;
-						//
-						// Display.getDefault().asyncExec(new Runnable() {
-						// public void run() {
-						//
-						// createTreeItem(fileList, indx, indx + 10,
-						// totalFileSize);
-						// }
-						// });
-						//
-						// try {
-						// Thread.sleep(2000);
-						// } catch (InterruptedException e) {
-						// e.printStackTrace();
-						// }
-						// }
+
 						checkPathForMultipleFile();
-						// System.out.println(fileNamePath);
-						// tree.setSelection(tree.getItem(0));
+
 					}
 
 				};
@@ -423,42 +392,17 @@ public class TreeTable {
 
 	private void createGroupFields(final Composite parent) {
 
-		// Group group = new Group(parent, SWT.None);
-
-		// Display dis=Display.getCurrent();
-
 		Group group = new Group(parent, SWT.None);
 
-		// parent.set);
-		// group.setSize(450, 30);
 		openBtn = new Button(group, SWT.NONE);
 		openBtn.setText("Open WIS File");
-		// openBtn.setSize(50, 0);
 		openBtn.setLocation(0, 2);
-		// openBtn.pack();
 
 		filenameLbl = new Label(group, SWT.LEFT | SWT.NONE);
 		filenameLbl
 				.setText("                                                                                       ");
-		// filenameLbl.setSize(200, 0);
 		filenameLbl.setLocation(110, 2);
 
-		// girdData.heightHint = 10;
-		// // createFolderTxt.setData(data);
-		// filenameLbl.setLayoutData(girdData);
-		// filenameLbl.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true,
-		// false,
-		// 1, 1));
-		// filenameLbl.pack();
-
-		// Group folderCreateGroup = new Group(parent, SWT.SHADOW_ETCHED_IN);
-		// ImageData pureWhiteIdeaImageData = new ImageData(
-		// "logoWithCompanyName.png");
-		// pureWhiteIdeaImageData.transparentPixel =
-		// pureWhiteIdeaImageData.palette
-		// .getPixel(new RGB(255, 255, 255));
-		// final Image transparentIdeaImage = new Image(Display.getDefault(),
-		// pureWhiteIdeaImageData);
 		Canvas canvas = new Canvas(group, SWT.NONE);
 		canvas.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
@@ -471,35 +415,14 @@ public class TreeTable {
 				// e.gc.drawImage(image, 0, 0, 100, 100, 200, 10, 200, 50);
 			}
 		});
-		// GridData girdData = new GridData();
-		// girdData.horizontalAlignment = SWT.FILL;
-		// girdData.grabExcessHorizontalSpace = true;
-		// canvas
 		GridData grid = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-		grid.widthHint = 160;
+		grid.widthHint = 180;
 		canvas.setLayoutData(grid);
-		// Canvas canvas = new Canvas(group, SWT.NULL);
-		//
-		// final Image image = new Image(Display.getDefault(),
-		// "logoWithCompanyName.png");
-		//
-		// canvas.addPaintListener(new PaintListener() {
-		// public void paintControl(PaintEvent e) {
-		// e.gc.drawImage(image, 30, 30);
-		// // e.gc.drawImage(image, 0, 0, 100, 100, 200, 10, 200, 50);
-		//
-		// }
-		// });
 
-		// Clicking the button will allow the user
-		// to select a directory
 		Button button = new Button(group, SWT.PUSH);
 		button.setText("External Src Folder");
-		// button.setLocation(2, 4);
-		// button.pack();
 
 		createFolderTxt = new Text(group, SWT.LEFT | SWT.BORDER);
-		// createFolderTxt.setSize(180, 13);
 		createFolderTxt.setLocation(135, 10);
 
 		Display display = Display.getDefault();
@@ -529,17 +452,7 @@ public class TreeTable {
 				}
 			}
 		});
-		// createFolderLbl = new Label(folderCreateGroup, SWT.NONE);
-		// createFolderLbl.setText("External Folder");
-		// createFolderLbl.setSize(5, 20);
-		// createFolderLbl.setLocation(5, 7);
-		// createFolderLbl.pack();
 
-		// GridData girdData2 = new GridData();
-		// girdData2.horizontalAlignment = SWT.FILL;
-		// girdData2.grabExcessHorizontalSpace = true;
-		// girdData2.heightHint = 10;
-		// createFolderTxt.setData(data);
 		createFolderTxt.setLayoutData(new GridData(SWT.FILL, SWT.None, true,
 				false, 2, 1));
 		GridLayout gridLayout = new GridLayout();
@@ -549,16 +462,7 @@ public class TreeTable {
 		gridData.heightHint = 66;
 
 		group.setLayoutData(gridData);
-		// group.pack();
-		// createFolderTxt.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true,
-		// false, 1, 1));
 
-		// createFolderTxt.pack();
-		// folderCreateGroup.setSize(200, 20);
-		// folderCreateGroup.pack();
-		// folderCreateGroup.setLayoutData(new GridData(SWT.FILL, SWT.NONE,
-		// true,
-		// false, 1, 1));
 	}
 
 	/**
@@ -571,15 +475,20 @@ public class TreeTable {
 			public void run() {
 				Display.getDefault().asyncExec(new Runnable() {
 					public void run() {
-						final Issue fileList = JsonUtil
-								.convertJsonToObject(new File(filenameLbl
-										.getText()));
-						if (fileList != null) {
-							// logger.info("size===== " + fileList.size());
+						try {
+							final Issue fileList = JsonUtil
+									.convertJsonToObject(new File(filenameLbl
+											.getText()));
+							if (fileList != null) {
+								// logger.info("size===== " + fileList.size());
 
-							setFileDetailList(fileList);
-							// System.out.println("ending======");
+								setFileDetailList(fileList);
+								// System.out.println("ending======");
+							}
+						} catch (Exception e) {
+							logger.error(e);
 						}
+
 					}
 				});
 			}
@@ -602,27 +511,15 @@ public class TreeTable {
 				if (!code.isEmpty() && code.length() > 30) {
 					int startLine = Integer.parseInt(selectTreeItem
 							.getText(FileTableColumnDtl.startLineIndex));
-					// int endLine = Integer.parseInt(selectTreeItem
-					// .getText(FileTableColumnDtl.lineNoIndex));
+
 					if (startLine == 0) {
 						startLine = 1;
 					}
-					// new JavaViewer().popup(code, startLine, endLine,
-					// selectTreeItem);// Prabhu
-					// TabbedPaneHighlight tt = new TabbedPaneHighlight(
-					// selectTreeItem
-					// .getText(FileTableColumnDtl.fileIndex));
-					// tt.setSnippetText(code, startLine);fffff
 
-					// JavaViewer2 view = new JavaViewer2();
-					// view.popup(code, startLine, endLine, selectTreeItem);
-					// Popup.show(view);
 				}
 			}
 		});
-		// Disable inbuilt tooltip
-		// tree.setToolTipText("");
-		// In table if double click is done then loads file
+
 		tree.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
