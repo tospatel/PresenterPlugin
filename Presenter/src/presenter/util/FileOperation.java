@@ -75,19 +75,27 @@ public class FileOperation {
 			// fileChecking.setFileFound(false);
 			// fileChecking.setFilePath("");
 			try {
+
 				// Get the root of the workspace
 				IWorkspace workspace = ResourcesPlugin.getWorkspace();
 				IWorkspaceRoot root = workspace.getRoot();
 				// Get all projects in the workspace
 				IProject[] projects = root.getProjects();
 
-				// if (!fileNamePathUpdated) {
 				for (IProject project : projects) {
 
-					fileExist = FileExistenanceRecursive
-							.checkingDirectoryForFile(project.getLocation()
-									.toString(), fileName.substring(fileName
-									.lastIndexOf(File.separator) + 1));
+					if (!fileNamePathUpdated) {
+						fileExist = FileExistenanceRecursive
+								.checkingDirectoryForFile(
+										project.getLocation().toString(),
+										fileName.substring(fileName
+												.lastIndexOf(File.separator) + 1));
+					} else {
+						fileExist = fileNamePath
+								.get(fileName.substring(fileName
+										.lastIndexOf(File.separator) + 1));
+					}
+
 					if (fileExist != null
 							&& (!fileExist.isEmpty())
 							&& fileExist.startsWith(project.getLocation()
@@ -100,10 +108,10 @@ public class FileOperation {
 						break;
 					}
 				}
+
 				// } else {
 				// for (IProject project : projects) {
-				// fileExist =
-				// fileNamePath.get(fileName.substring(fileName.lastIndexOf(File.separator)+1));
+				//
 				// if (fileExist != null
 				// && (!fileExist.isEmpty())
 				// && fileExist.startsWith(project.getLocation()
@@ -198,7 +206,8 @@ public class FileOperation {
 			// IFile fileToBeOpened = path.toFile();
 			try {
 				List<String> contentList = null;
-				logger.info(" raw loaction " + fileToBeOpened.getRawLocation());
+				// logger.info(" raw loaction " +
+				// fileToBeOpened.getRawLocation());
 				if (fileToBeOpened.getRawLocation() == null) {
 					try {
 						contentList = FileUtils.readLines(fileToBeOpened
@@ -215,9 +224,9 @@ public class FileOperation {
 				} else {
 					contentList = FileUtils.readLines(fileToBeOpened
 							.getRawLocation().makeAbsolute().toFile());
-					logger.info("Full Path "
-							+ fileToBeOpened.getRawLocation().makeAbsolute()
-									.toFile());
+					// logger.info("Full Path "
+					// + fileToBeOpened.getRawLocation().makeAbsolute()
+					// .toFile());
 				}
 
 				// openExternalfile(fileToBeOpened
@@ -517,7 +526,8 @@ public class FileOperation {
 			// IFile fileToBeOpened = path.toFile();
 			try {
 				List<String> contentList = null;
-				logger.info(" raw loaction " + fileToBeOpened.getRawLocation());
+				// logger.info(" raw loaction " +
+				// fileToBeOpened.getRawLocation());
 				if (fileToBeOpened.getRawLocation() == null) {
 					try {
 						contentList = FileUtils.readLines(fileToBeOpened
@@ -534,9 +544,9 @@ public class FileOperation {
 				} else {
 					contentList = FileUtils.readLines(fileToBeOpened
 							.getRawLocation().makeAbsolute().toFile());
-					logger.info("full path "
-							+ fileToBeOpened.getRawLocation().makeAbsolute()
-									.toFile());
+					// logger.info("full path "
+					// + fileToBeOpened.getRawLocation().makeAbsolute()
+					// .toFile());
 				}
 				// openExternalfile(fileToBeOpened
 				// .getRawLocation().makeAbsolute().toFile());

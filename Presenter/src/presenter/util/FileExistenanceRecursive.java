@@ -2,7 +2,6 @@ package presenter.util;
 
 import java.io.File;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javaxt.io.Directory;
 
@@ -82,53 +81,57 @@ public class FileExistenanceRecursive {
 	 */
 	public Map<String, String> checkingDirectoryForMultipleFile(String dirPath,
 			int level, Map<String, String> fileCheck) {
-		logger.info("checkingDirectoryForMultipleFile =====================Dir Path "
-				+ dirPath);
+		// logger.info("checkingDirectoryForMultipleFile =====================Dir Path "
+		// + dirPath);
 		File dir = new File(dirPath);
 		File[] firstLevelFiles = dir.listFiles();
 		if (firstLevelFiles != null && firstLevelFiles.length > 0) {
 			for (File aFile : firstLevelFiles) {
-				for (int i = 0; i < level; i++) {
-					System.out.print("\t");
-				}
+				// for (int i = 0; i < level; i++) {
+				// System.out.print("\t");
+				// }
 				if (aFile.isDirectory()) {
 					// logger.info("[" + aFile.getName() + "]");
-					if ((!aFile.getName().equals("bin"))
-							&& (!aFile.getName().equals("classes"))
-							&& (!aFile.getName().equals("lib"))) {
-						fileCheck = checkingDirectoryForMultipleFile(
-								aFile.getAbsolutePath(), level + 1, fileCheck);
-					}
+					// if ((!aFile.getName().equals("bin"))
+					// && (!aFile.getName().equals("classes"))
+					// && (!aFile.getName().equals("lib"))) {
+					fileCheck = checkingDirectoryForMultipleFile(
+							aFile.getAbsolutePath(), level + 1, fileCheck);
+					// }
 				} else {
 					// fileExist = fileCheck.equals(aFile.getName());
-					// logger.info(aFile.getName());
-					for (Entry<String, String> entry : fileCheck.entrySet()) {
+					// logger.info(aFile.getName() + " condition "
+					// + fileCheck.containsKey(aFile.getName()));
+					// for (Entry<String, String> entry : fileCheck.entrySet())
+					// {
 
-						if (entry.getKey().equals(aFile.getName())
-								&& (entry.getValue().isEmpty() || entry
-										.getValue() == null)) {
+					// if (entry.getKey().equals(aFile.getName())
+					// && (entry.getValue().isEmpty() || entry
+					// .getValue() == null)) {
 
-							// fileFound = true;
-							// filePath = aFile.getAbsolutePath();
-							// logger.info(aFile.getName() +
-							// " fileExist "
-							// + aFile.getAbsolutePath());
-							// filePath = aFile.getPath();
-							fileCheck.put(aFile.getName() + "",
-									aFile.getAbsolutePath());
-							// fileCheck.
-							// fileCheck.put("AbstractLesson.java","123");
-							// fileCheck.containsKey("AbstractLesson.java")
-							logger.info("key " + entry.getKey() + " value "
-									+ aFile.getName() + " fileExist "
-									+ aFile.getAbsolutePath());
-							// return filePath;
+					// fileFound = true;
+					// filePath = aFile.getAbsolutePath();
+					// logger.info(aFile.getName() +
+					// " fileExist "
+					// + aFile.getAbsolutePath());
+					// filePath = aFile.getPath();
 
-						}
+					if (fileCheck.containsKey(aFile.getName())) {
+
+						fileCheck.put(aFile.getName(), aFile.getAbsolutePath());
+						// fileCheck.
+						// fileCheck.put("AbstractLesson.java","123");
+						// fileCheck.containsKey("AbstractLesson.java")
+						logger.info("key " + aFile.getName() + " fileExist "
+								+ aFile.getAbsolutePath());
+						// return filePath;
+
 					}
-
 				}
+				// }
+
 			}
+			// }
 		}
 
 		return fileCheck;

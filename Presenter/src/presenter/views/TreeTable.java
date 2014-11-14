@@ -2,6 +2,7 @@ package presenter.views;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -241,37 +242,89 @@ public class TreeTable {
 					public void run() {
 
 						int index = 0;
+						// List collectioList = fileList.getCollection();
+						// int size = collectioList.size();
+						// int row = 0;
+						// for (row = 0; row < size; row++) {
+						//
+						// final Map collectionMap = (LinkedHashMap)
+						// collectioList
+						// .get(row);
+						//
+						// // synchronized (collectionMap) {
+						// if (collectionMap != null) {
+						//
+						// index++;
+						// Display.getDefault().asyncExec(new Runnable() {
+						// public void run() {
+						//
+						// createTreeItem(collectionMap);
+						//
+						// }
+						// });
+						//
+						// if (index % 3 == 0) {
+						// try {
+						//
+						// Thread.sleep(2000);
+						// } catch (InterruptedException e) {
+						// logger.error(e);
+						// }
+						// }
+						//
+						// }
+						// // }
+						// logger.info("======row=== " + row);
+						//
+						// }
+						// if (row == size) {
+						// logger.info("========================Completed Setting Details=============== row "
+						// + row);
+						// checkPathForMultipleFile();
+						// }
 						for (Object collection : fileList.getCollection()) {
-							final LinkedHashMap collectionMap = (LinkedHashMap) collection;
+							final Map collectionMap = Collections
+									.synchronizedMap((LinkedHashMap) collection);
+							synchronized (collectionMap) {
+								if (collectionMap != null) {
 
-							if (collectionMap != null) {
+									index++;
+									Display.getDefault().asyncExec(
+											new Runnable() {
+												public void run() {
 
-								index++;
-								Display.getDefault().asyncExec(new Runnable() {
-									public void run() {
+													createTreeItem(collectionMap);
 
-										createTreeItem(collectionMap);
+												}
+											});
+
+									if (index % 3 == 0) {
+										try {
+
+											Thread.sleep(2000);
+										} catch (InterruptedException e) {
+											logger.error(e);
+										}
 									}
-								});
 
-								if (index % 3 == 0) {
-									try {
-
-										Thread.sleep(2000);
-									} catch (InterruptedException e) {
-										logger.error(e);
-									}
 								}
 							}
-
 						}
-
-						checkPathForMultipleFile();
 
 					}
 
 				};
 				fileDetailThread.start();
+				// fileDetailThread.join();
+				//
+				// Thread fileDetailsMapThread = new Thread() {
+				//
+				// public void run() {
+				// checkPathForMultipleFile();
+				// }
+				// };
+				// fileDetailsMapThread.start();
+				// fileDetailsMapThread.join();
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -282,17 +335,28 @@ public class TreeTable {
 	}
 
 	private void checkPathForMultipleFile() {
-		FileExistenanceRecursive fileChecking = new FileExistenanceRecursive();
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IWorkspaceRoot root = workspace.getRoot();
-		// Get all projects in the workspace
-		IProject[] projects = root.getProjects();
-		// Loop over all projects
-		for (IProject project : projects) {
-			this.fileNamePath = fileChecking.checkingDirectoryForMultipleFile(
-					project.getLocation().toString(), 0, fileNamePath);
-		}
-		fileNamePathUpdated = true;
+		Thread fileDetailsMapThread = new Thread() {
+
+			public void run() {
+
+				FileExistenanceRecursive fileChecking = new FileExistenanceRecursive();
+				IWorkspace workspace = ResourcesPlugin.getWorkspace();
+				IWorkspaceRoot root = workspace.getRoot();
+				// Get all projects in the workspace
+				IProject[] projects = root.getProjects();
+				// Loop over all projects
+				logger.info("Map value " + fileNamePath);
+				for (IProject project : projects) {
+					fileNamePath = fileChecking
+							.checkingDirectoryForMultipleFile(project
+									.getLocation().toString(), 0, fileNamePath);
+				}
+				logger.info("Map value " + fileNamePath);
+				fileNamePathUpdated = true;
+			}
+		};
+		fileDetailsMapThread.start();
+		// fileDetailsMapThread.join();
 	}
 
 	/**
@@ -303,11 +367,11 @@ public class TreeTable {
 	 * @param endIndex
 	 * @param totalFileSize
 	 */
-	private void createTreeItem(LinkedHashMap collectionMap) {
+	private synchronized void createTreeItem(Map collectionMap) {
 
 		// for (int index = startIndex; index < totalFileSize && index <
 		// endIndex; index++) {
-
+		// logger.info("-----------start createTreeItem");
 		TreeItem fileDtlRow = new TreeItem(tree, SWT.NONE);
 
 		// for (Object collection : fileList.getCollection()) {
@@ -368,7 +432,7 @@ public class TreeTable {
 				fileNamePath.put(
 						file.substring(file.lastIndexOf(File.separator) + 1),
 						"");
-
+				// logger.info("++++++++++++++++fileNamePath " + fileNamePath);
 				stepDtlRow.setText(FileTableColumnDtl.locationIndex,
 						StringUtility.checkIfNullThenEmpty(step
 								.get("relative_line_number")));
@@ -387,7 +451,7 @@ public class TreeTable {
 			// System.out.println(stepObject);
 		}
 
-		// }
+		// \ }
 	}
 
 	private void createGroupFields(final Composite parent) {
@@ -416,7 +480,7 @@ public class TreeTable {
 			}
 		});
 		GridData grid = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-		grid.widthHint = 180;
+		grid.widthHint = 100;
 		canvas.setLayoutData(grid);
 
 		Button button = new Button(group, SWT.PUSH);
@@ -470,29 +534,29 @@ public class TreeTable {
 	 */
 	private void createTable(Composite parent) {
 
-		new Thread() {
+		// new Thread() {
+		//
+		// public void run() {
+		// Display.getDefault().asyncExec(new Runnable() {
+		// public void run() {
+		try {
+			fileNamePathUpdated = false;
+			final Issue fileList = JsonUtil.convertJsonToObject(new File(
+					filenameLbl.getText()));
+			if (fileList != null) {
+				// logger.info("size===== " + fileList.size());
 
-			public void run() {
-				Display.getDefault().asyncExec(new Runnable() {
-					public void run() {
-						try {
-							final Issue fileList = JsonUtil
-									.convertJsonToObject(new File(filenameLbl
-											.getText()));
-							if (fileList != null) {
-								// logger.info("size===== " + fileList.size());
-
-								setFileDetailList(fileList);
-								// System.out.println("ending======");
-							}
-						} catch (Exception e) {
-							logger.error(e);
-						}
-
-					}
-				});
+				setFileDetailList(fileList);
+				// System.out.println("ending======");
 			}
-		}.start();
+		} catch (Exception e) {
+			logger.error(e);
+		}
+
+		// }
+		// });
+		// }
+		// }.start();
 
 	}
 
@@ -563,6 +627,9 @@ public class TreeTable {
 				}
 				if (sol != null && !sol.isEmpty()) {
 					solution = sol;
+				}
+				if (fileNamePathUpdated == false) {
+					checkPathForMultipleFile();
 				}
 				// System.out.println("Expand={" + e.item + "}");
 			}
