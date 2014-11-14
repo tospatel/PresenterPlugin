@@ -56,24 +56,15 @@ public class FileOperation {
 	 * @param fileNamePathUpdated
 	 * @param fileNamePath
 	 */
-	public static void checkFileExist(final IWorkbenchPage wbPage,
-			final TreeItem selectTreeItem, boolean fileNamePathUpdated,
-			final Map<String, String> fileNamePath) {
+	public static void checkFileExist(final TreeItem selectTreeItem,
+			boolean fileNamePathUpdated, final Map<String, String> fileNamePath) {
 
 		String fileName = selectTreeItem.getText(FileTableColumnDtl.fileIndex);
-		// final int line = Integer.parseInt(((selectTreeItem
-		// .getText(FileTableColumnDtl.locationIndex).isEmpty()) ? "0"
-		// : selectTreeItem.getText(FileTableColumnDtl.locationIndex)));
-		// String lineContent = selectTreeItem
-		// .getText(FileTableColumnDtl.codeIndex);
+
 		String fullPath = null;
 		String fileExist = "";
 		if (!fileName.isEmpty()) {
 
-			// FileExistenanceRecursive fileChecking = new
-			// FileExistenanceRecursive();
-			// fileChecking.setFileFound(false);
-			// fileChecking.setFilePath("");
 			try {
 
 				// Get the root of the workspace
@@ -108,23 +99,6 @@ public class FileOperation {
 						break;
 					}
 				}
-
-				// } else {
-				// for (IProject project : projects) {
-				//
-				// if (fileExist != null
-				// && (!fileExist.isEmpty())
-				// && fileExist.startsWith(project.getLocation()
-				// .toString())) {
-				// fileExist = fileExist.substring(
-				// project.getLocation().toString()
-				// .lastIndexOf(File.separatorChar),
-				// fileExist.length());
-				// break;
-				// }
-				// }
-				//
-				// }
 
 				final String file = fileExist;
 				final String path = fullPath;

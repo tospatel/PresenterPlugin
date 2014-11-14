@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
+import presenter.util.DailyRollingLogFiles;
 import presenter.util.PropertyFileUtil;
 import presenter.util.customproject.CustomProjectSupport;
 
@@ -40,11 +41,10 @@ public class FileView extends ViewPart {
 	 */
 
 	public void createPartControl(Composite parent) {
+		DailyRollingLogFiles.createLogFile();
+
 		logger.info("Invoke main method - createPartControl() for plugin");
-		// Splitter.openSnippet();
-		// Snippet.openSnippet();
-		// HTMLRendererInMemory.code();
-		// TabbedPaneHighlight.openTabSnippet();
+
 		CustomProjectSupport.deleteTempProject();
 		new PropertyFileUtil().loadPropertyFile();
 		// get object which represents the workspace

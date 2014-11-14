@@ -26,6 +26,7 @@ public class CustomProjectNewWizard extends Wizard implements INewWizard,
 	// private WizardNewProjectCreationPage _pageOne;
 	private URI location = null;
 	private String filePath;
+	private static String folderPath = "src";
 
 	final static Logger logger = Logger.getLogger(CustomProjectNewWizard.class);
 	private Map<String, String> fileNamePath;
@@ -69,7 +70,7 @@ public class CustomProjectNewWizard extends Wizard implements INewWizard,
 		logger.info("Invoke performFinish() === location: "
 				+ location.toString());
 		IProject project = CustomProjectSupport.createProject(location,
-				fileNamePath);
+				folderPath);
 		// Add this
 		// BasicNewProjectResourceWizard.updatePerspective(_configurationElement);
 

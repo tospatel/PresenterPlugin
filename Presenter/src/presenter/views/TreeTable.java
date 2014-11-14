@@ -15,8 +15,6 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.events.MenuAdapter;
-import org.eclipse.swt.events.MenuEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.PaintEvent;
@@ -37,7 +35,6 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -242,46 +239,7 @@ public class TreeTable {
 					public void run() {
 
 						int index = 0;
-						// List collectioList = fileList.getCollection();
-						// int size = collectioList.size();
-						// int row = 0;
-						// for (row = 0; row < size; row++) {
-						//
-						// final Map collectionMap = (LinkedHashMap)
-						// collectioList
-						// .get(row);
-						//
-						// // synchronized (collectionMap) {
-						// if (collectionMap != null) {
-						//
-						// index++;
-						// Display.getDefault().asyncExec(new Runnable() {
-						// public void run() {
-						//
-						// createTreeItem(collectionMap);
-						//
-						// }
-						// });
-						//
-						// if (index % 3 == 0) {
-						// try {
-						//
-						// Thread.sleep(2000);
-						// } catch (InterruptedException e) {
-						// logger.error(e);
-						// }
-						// }
-						//
-						// }
-						// // }
-						// logger.info("======row=== " + row);
-						//
-						// }
-						// if (row == size) {
-						// logger.info("========================Completed Setting Details=============== row "
-						// + row);
-						// checkPathForMultipleFile();
-						// }
+
 						for (Object collection : fileList.getCollection()) {
 							final Map collectionMap = Collections
 									.synchronizedMap((LinkedHashMap) collection);
@@ -315,16 +273,6 @@ public class TreeTable {
 
 				};
 				fileDetailThread.start();
-				// fileDetailThread.join();
-				//
-				// Thread fileDetailsMapThread = new Thread() {
-				//
-				// public void run() {
-				// checkPathForMultipleFile();
-				// }
-				// };
-				// fileDetailsMapThread.start();
-				// fileDetailsMapThread.join();
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -339,7 +287,8 @@ public class TreeTable {
 
 			public void run() {
 
-				FileExistenanceRecursive fileChecking = new FileExistenanceRecursive();
+				// FileExistenanceRecursive fileChecking = new
+				// FileExistenanceRecursive();
 				IWorkspace workspace = ResourcesPlugin.getWorkspace();
 				IWorkspaceRoot root = workspace.getRoot();
 				// Get all projects in the workspace
@@ -347,9 +296,8 @@ public class TreeTable {
 				// Loop over all projects
 				logger.info("Map value " + fileNamePath);
 				for (IProject project : projects) {
-					fileNamePath = fileChecking
-							.checkingDirectoryForMultipleFile(project
-									.getLocation().toString(), 0, fileNamePath);
+					FileExistenanceRecursive.checkingDirectoryForMultipleFile(
+							project.getLocation().toString(), 0, fileNamePath);
 				}
 				logger.info("Map value " + fileNamePath);
 				fileNamePathUpdated = true;
@@ -479,8 +427,8 @@ public class TreeTable {
 				// e.gc.drawImage(image, 0, 0, 100, 100, 200, 10, 200, 50);
 			}
 		});
-		GridData grid = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-		grid.widthHint = 100;
+		GridData grid = new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1);
+		grid.widthHint = 180;
 		canvas.setLayoutData(grid);
 
 		Button button = new Button(group, SWT.PUSH);
@@ -565,25 +513,6 @@ public class TreeTable {
 	 */
 	public void createListner() {
 
-		// Below code is use to show tooltip on right click of table
-		final Menu menu = new Menu(tree);
-		tree.setMenu(menu);
-		menu.addMenuListener(new MenuAdapter() {
-			public void menuShown(MenuEvent e) {
-				String code = selectTreeItem
-						.getText(FileTableColumnDtl.codeIndex);
-				if (!code.isEmpty() && code.length() > 30) {
-					int startLine = Integer.parseInt(selectTreeItem
-							.getText(FileTableColumnDtl.startLineIndex));
-
-					if (startLine == 0) {
-						startLine = 1;
-					}
-
-				}
-			}
-		});
-
 		tree.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
@@ -594,7 +523,7 @@ public class TreeTable {
 							.isEmpty()) {
 						fileNamePath.put(AppConstant.folderTextFieldName,
 								createFolderTxt.getText());
-						FileOperation.checkFileExist(wbPage, selectTreeItem,
+						FileOperation.checkFileExist(selectTreeItem,
 								fileNamePathUpdated, fileNamePath);
 					}
 				}

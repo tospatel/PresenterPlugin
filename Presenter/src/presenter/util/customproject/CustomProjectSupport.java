@@ -43,8 +43,7 @@ public class CustomProjectSupport {
 	 * @param natureId
 	 * @return
 	 */
-	public static IProject createProject(URI location,
-			Map<String, String> fileNamePath) {
+	public static IProject createProject(URI location, String createFolder) {
 		// Assert.isNotNull(projectName);
 		// Assert.isTrue(projectName.trim().length() > 0);
 
@@ -54,7 +53,7 @@ public class CustomProjectSupport {
 		try {
 			addNature(project);
 
-			String[] paths = { folderPath };
+			String[] paths = { createFolder };
 			//"parent/child1-1/child2", "parent/child1-2/child2/child3" }; //$NON-NLS-1$ //$NON-NLS-2$
 			addToProjectStructure(project, paths);
 		} catch (CoreException e) {
