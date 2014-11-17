@@ -15,6 +15,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.PaintEvent;
@@ -23,6 +24,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -81,8 +83,9 @@ public class TreeTable {
 			FileTableColumnDtl.compliance, FileTableColumnDtl.formattedCode };
 	private TreeItem selectTreeItem;
 	private boolean itemSelection = false;
+	private int totalVulnSize = 0, itemFillInTable = 0;
 	private Composite parent;
-	Map<String, String> fileNamePath = null;
+	private Map<String, String> fileNamePath = null;
 	private Boolean fileNamePathUpdated = false;
 	private ArrayList<Browser> tabItemList = new ArrayList<Browser>();
 	final static Logger logger = Logger.getLogger(TreeTable.class);
@@ -114,21 +117,41 @@ public class TreeTable {
 		logger.info(" Calling addChildControls ");
 		// Create a composite to hold the children
 
-		createGroupFields(composite);
-		Label separator = new Label(composite, SWT.VERTICAL | SWT.SEPARATOR);
-		separator.setLayoutData(new GridData(SWT.None, SWT.FILL, false, true,
-				1, 3));
-		setSnippet(parent);
+		SashForm sashForm = new SashForm(composite, SWT.HORIZONTAL);
+		Composite leftComposite = new Composite(sashForm, SWT.BORDER
+				| SWT.CENTER);
+		leftComposite.setLayout(new FillLayout());
+		leftComposite.setSize(500, 350);
+		final Composite rightComposite = new Composite(sashForm, SWT.BORDER
+				| SWT.CENTER);
+		rightComposite.setLayout(new FillLayout());
 
-		GridLayout layout = new GridLayout(3, false);
-		composite.setLayout(layout);
+		// Change the width of the sashes
+		sashForm.setSashWidth(10);
 
-		setTableLayout(composite);
+		// Change the color used to paint the sashes
+		// sashForm.setBackground(parent.getDisplay().getSystemColor(
+		// SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 
-		Label version = new Label(composite, SWT.RIGHT);
-		version.setText(getVersionAndDate());
-		version.setLayoutData(new GridData(SWT.FILL, SWT.None, true, false, 1,
-				1));
+		// Set the relative weights for the buttons
+		sashForm.setWeights(new int[] { 3, 2 });
+		// sashForm.set
+		createGroupFields(leftComposite);
+		// Label separator = new Label(composite, SWT.VERTICAL | SWT.SEPARATOR);
+		// separator.setLayoutData(new GridData(SWT.None, SWT.FILL, false, true,
+		// 1, 3));
+		setSnippet(rightComposite);
+
+		// GridLayout layout = new GridLayout(3, false);
+		// composite.setLayout(layout);
+
+		// setTableLayout(composite);
+
+		// Label version = new Label(composite, SWT.RIGHT);
+		// version.setText(getVersionAndDate());
+		// version.setLayoutData(new GridData(SWT.FILL, SWT.None, true, false,
+		// 1,
+		// 1));
 
 		setTableColumn();
 		createListner();
@@ -142,19 +165,19 @@ public class TreeTable {
 	 */
 	public void setTableLayout(Composite parent) {
 
-		int style = SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER;
+		int style = SWT.MULTI | SWT.FULL_SELECTION;
 		tree = new Tree(parent, style);
-		GridData gridData = new GridData(GridData.FILL_BOTH); // new
-		gridData.grabExcessVerticalSpace = true;
+		// GridData gridData = new GridData(GridData.FILL_BOTH); // new
+		// gridData.grabExcessVerticalSpace = true;
 
-		tree.setLayoutData(new GridData(SWT.None, SWT.FILL, false, true, 1, 2));
+		tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
 		tree.setHeaderVisible(true);
 		tree.setLinesVisible(true);
-
+		// tree.setsi
 	}
 
 	public void setSnippet(Composite parent) {
-		tabFolder = new TabFolder(parent, SWT.BORDER);
+		tabFolder = new TabFolder(parent, SWT.None);
 		for (int loopIndex = 0; loopIndex < 3; loopIndex++) {
 			TabItem tabItem = new TabItem(tabFolder, SWT.NULL);
 			String header = "";
@@ -185,11 +208,12 @@ public class TreeTable {
 
 		}
 
-		GridData gridData = new GridData(GridData.FILL_BOTH); // new
+		GridData gridData = new GridData(GridData.FILL_VERTICAL); // new
 		gridData.grabExcessVerticalSpace = true;
-
-		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1,
-				2));
+		gridData.widthHint = 100;
+		tabFolder.setLayoutData(gridData);
+		// new GridData(SWT.None, SWT.FILL, false, true,
+		// 1, 1));
 	}
 
 	/**
@@ -239,6 +263,8 @@ public class TreeTable {
 					public void run() {
 
 						int index = 0;
+						itemFillInTable = 0;
+						totalVulnSize = fileList.getCollection().size();
 
 						for (Object collection : fileList.getCollection()) {
 							final Map collectionMap = Collections
@@ -398,11 +424,13 @@ public class TreeTable {
 			}
 			// System.out.println(stepObject);
 		}
+		itemFillInTable++;
 
 		// \ }
 	}
 
 	private void createGroupFields(final Composite parent) {
+		// Group parentGroup = new Group(parent, SWT.None);
 
 		Group group = new Group(parent, SWT.None);
 
@@ -414,7 +442,8 @@ public class TreeTable {
 		filenameLbl
 				.setText("                                                                                       ");
 		filenameLbl.setLocation(110, 2);
-
+		filenameLbl.setLayoutData(new GridData(SWT.FILL, SWT.None, true, false,
+				1, 1));
 		Canvas canvas = new Canvas(group, SWT.NONE);
 		canvas.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
@@ -427,8 +456,10 @@ public class TreeTable {
 				// e.gc.drawImage(image, 0, 0, 100, 100, 200, 10, 200, 50);
 			}
 		});
-		GridData grid = new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1);
+
+		GridData grid = new GridData(SWT.FILL, SWT.None, false, false, 1, 1);
 		grid.widthHint = 180;
+		grid.heightHint = 30;
 		canvas.setLayoutData(grid);
 
 		Button button = new Button(group, SWT.PUSH);
@@ -470,11 +501,12 @@ public class TreeTable {
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 3;
 		group.setLayout(gridLayout);
-		GridData gridData = new GridData(SWT.FILL, SWT.NONE, false, false, 1, 1);
-		gridData.heightHint = 66;
-
+		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+		// gridData.heightHint = 66;
+		gridData.widthHint = 500;
 		group.setLayoutData(gridData);
 
+		setTableLayout(group);
 	}
 
 	/**
@@ -519,6 +551,13 @@ public class TreeTable {
 
 				if (itemSelection) {
 
+					logger.info("====== TotalVulnSize " + totalVulnSize
+							+ "===ItemFillInTable===> " + itemFillInTable);
+					if (fileNamePathUpdated == false
+							&& itemFillInTable == totalVulnSize) {
+						checkPathForMultipleFile();
+					}
+
 					if (!selectTreeItem.getText(FileTableColumnDtl.fileIndex)
 							.isEmpty()) {
 						fileNamePath.put(AppConstant.folderTextFieldName,
@@ -557,9 +596,7 @@ public class TreeTable {
 				if (sol != null && !sol.isEmpty()) {
 					solution = sol;
 				}
-				if (fileNamePathUpdated == false) {
-					checkPathForMultipleFile();
-				}
+
 				// System.out.println("Expand={" + e.item + "}");
 			}
 		});

@@ -41,8 +41,10 @@ public class FileView extends ViewPart {
 	 */
 
 	public void createPartControl(Composite parent) {
+		// SashFormDemo.open();
+		// Snippet107.open();
 		DailyRollingLogFiles.createLogFile();
-
+		// LwjglSwtExample.addNewCanvas();
 		logger.info("Invoke main method - createPartControl() for plugin");
 
 		CustomProjectSupport.deleteTempProject();
