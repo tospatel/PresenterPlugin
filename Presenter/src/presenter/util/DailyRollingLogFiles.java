@@ -15,8 +15,10 @@ import presenter.shared.AppConstant;
 import presenter.util.customproject.CustomProjectSupport;
 
 public class DailyRollingLogFiles {
+	public static Logger logger = null;
+
 	public static void createLogFile() {
-		Logger logger = null;
+
 		try {
 
 			// creates pattern layout

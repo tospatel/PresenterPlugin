@@ -503,7 +503,7 @@ public class TreeTable {
 		group.setLayout(gridLayout);
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		// gridData.heightHint = 66;
-		gridData.widthHint = 500;
+		// gridData.widthHint = 500;
 		group.setLayoutData(gridData);
 
 		setTableLayout(group);
@@ -645,7 +645,8 @@ public class TreeTable {
 		 * selectTreeItem.getText(FileTableColumnDtl.codeIndex).replace( "\n",
 		 * "<br/>") + "<pre/>");
 		 */
-		if (parentItem.getText(FileTableColumnDtl.codeIndex) != null) {
+		if (parentItem != null
+				&& parentItem.getText(FileTableColumnDtl.codeIndex) != null) {
 			browse.setText(selectTreeItem.getText(FileTableColumnDtl.codeIndex));
 			// Prabhu:
 			// I modified the codeIndex field to have the formattedCode info,

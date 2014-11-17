@@ -93,6 +93,9 @@ public class JsonUtil {
 			// Err_file_io
 			String message = "Err_file_io";
 			// displayError(message);
+			MessageBoxView.show(PropertyFileUtil.getProp().getProperty(
+					"jsonFileError"));
+			logger.error(e);
 			return null;
 		}
 		return buffer.toString();
