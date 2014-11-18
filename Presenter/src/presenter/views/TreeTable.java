@@ -118,40 +118,20 @@ public class TreeTable {
 		// Create a composite to hold the children
 
 		SashForm sashForm = new SashForm(composite, SWT.HORIZONTAL);
+
 		Composite leftComposite = new Composite(sashForm, SWT.BORDER
-				| SWT.CENTER);
+				| SWT.CENTER | SWT.SHADOW_NONE);
 		leftComposite.setLayout(new FillLayout());
 		leftComposite.setSize(500, 350);
 		final Composite rightComposite = new Composite(sashForm, SWT.BORDER
 				| SWT.CENTER);
-		rightComposite.setLayout(new FillLayout());
+		rightComposite.setLayout(new GridLayout(1, false));
 
-		// Change the width of the sashes
 		sashForm.setSashWidth(10);
-
-		// Change the color used to paint the sashes
-		// sashForm.setBackground(parent.getDisplay().getSystemColor(
-		// SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
-
-		// Set the relative weights for the buttons
 		sashForm.setWeights(new int[] { 3, 2 });
-		// sashForm.set
 		createGroupFields(leftComposite);
-		// Label separator = new Label(composite, SWT.VERTICAL | SWT.SEPARATOR);
-		// separator.setLayoutData(new GridData(SWT.None, SWT.FILL, false, true,
-		// 1, 3));
+
 		setSnippet(rightComposite);
-
-		// GridLayout layout = new GridLayout(3, false);
-		// composite.setLayout(layout);
-
-		// setTableLayout(composite);
-
-		// Label version = new Label(composite, SWT.RIGHT);
-		// version.setText(getVersionAndDate());
-		// version.setLayoutData(new GridData(SWT.FILL, SWT.None, true, false,
-		// 1,
-		// 1));
 
 		setTableColumn();
 		createListner();
@@ -167,17 +147,15 @@ public class TreeTable {
 
 		int style = SWT.MULTI | SWT.FULL_SELECTION;
 		tree = new Tree(parent, style);
-		// GridData gridData = new GridData(GridData.FILL_BOTH); // new
-		// gridData.grabExcessVerticalSpace = true;
 
 		tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
 		tree.setHeaderVisible(true);
 		tree.setLinesVisible(true);
-		// tree.setsi
 	}
 
 	public void setSnippet(Composite parent) {
-		tabFolder = new TabFolder(parent, SWT.None);
+
+		tabFolder = new TabFolder(parent, SWT.FILL);
 		for (int loopIndex = 0; loopIndex < 3; loopIndex++) {
 			TabItem tabItem = new TabItem(tabFolder, SWT.NULL);
 			String header = "";
@@ -208,12 +186,13 @@ public class TreeTable {
 
 		}
 
-		GridData gridData = new GridData(GridData.FILL_VERTICAL); // new
-		gridData.grabExcessVerticalSpace = true;
-		gridData.widthHint = 100;
-		tabFolder.setLayoutData(gridData);
-		// new GridData(SWT.None, SWT.FILL, false, true,
-		// 1, 1));
+		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1,
+				1));
+		Label version = new Label(parent, SWT.BOTTOM | SWT.RIGHT | SWT.BORDER);
+		version.setText(getVersionAndDate());
+		version.setLayoutData(new GridData(SWT.FILL, SWT.None, true, false, 1,
+				1));
+
 	}
 
 	/**
@@ -432,7 +411,9 @@ public class TreeTable {
 	private void createGroupFields(final Composite parent) {
 		// Group parentGroup = new Group(parent, SWT.None);
 
-		Group group = new Group(parent, SWT.None);
+		SashForm sashForm2 = new SashForm(parent, SWT.VERTICAL);
+
+		Group group = new Group(sashForm2, SWT.None);
 
 		openBtn = new Button(group, SWT.NONE);
 		openBtn.setText("Open WIS File");
