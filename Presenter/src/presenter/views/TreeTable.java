@@ -15,7 +15,6 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.PaintEvent;
@@ -24,7 +23,9 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -37,6 +38,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -115,23 +117,41 @@ public class TreeTable {
 	 */
 	private void addChildControls(Composite composite) {
 		logger.info(" Calling addChildControls ");
-		// Create a composite to hold the children
 
-		SashForm sashForm = new SashForm(composite, SWT.HORIZONTAL);
+		composite.setLayout(new FormLayout());
+		final Sash sash = new Sash(composite, SWT.VERTICAL);
+		FormData data = new FormData();
+		data.top = new FormAttachment(0, 0); // Attach to top
+		data.bottom = new FormAttachment(100, 0); // Attach to bottom
+		data.left = new FormAttachment(59, 0); // Attach halfway across
+		sash.setLayoutData(data);
+		Device device = Display.getCurrent();
+		sash.setBackground(device.getSystemColor(SWT.COLOR_DARK_GRAY));
+		// final int SASH_LIMIT = 20;
+		sash.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				// We reattach to the left edge, and we use the x value of the
+				// event to
+				// determine the offset from the left
+				((FormData) sash.getLayoutData()).left = new FormAttachment(0,
+						event.x);
+				// Rectangle rect = sash.getParent().getClientArea();
+				// event.x = Math.min(Math.max(event.x, SASH_LIMIT), rect.width
+				// - SASH_LIMIT);
+				// if (event.detail != SWT.DRAG) {
+				// sash.setBounds(event.x, event.y, event.width, event.height);
+				// // sashform.layout();
+				// }
+				// Until the parent window does a layout, the sash will not be
+				// redrawn in
+				// its new location.
+				sash.getParent().layout();
+			}
+		});
 
-		Composite leftComposite = new Composite(sashForm, SWT.BORDER
-				| SWT.CENTER | SWT.SHADOW_NONE);
-		leftComposite.setLayout(new FillLayout());
-		leftComposite.setSize(500, 350);
-		final Composite rightComposite = new Composite(sashForm, SWT.BORDER
-				| SWT.CENTER);
-		rightComposite.setLayout(new GridLayout(1, false));
+		createGroupFields(composite, sash);
 
-		sashForm.setSashWidth(10);
-		sashForm.setWeights(new int[] { 3, 2 });
-		createGroupFields(leftComposite);
-
-		setSnippet(rightComposite);
+		setSnippet(composite, sash);
 
 		setTableColumn();
 		createListner();
@@ -153,9 +173,13 @@ public class TreeTable {
 		tree.setLinesVisible(true);
 	}
 
-	public void setSnippet(Composite parent) {
+	public void setSnippet(Composite parent, Sash sash) {
 
-		tabFolder = new TabFolder(parent, SWT.FILL);
+		Composite leftComposite = new Composite(parent, SWT.BORDER | SWT.CENTER
+				| SWT.SHADOW_NONE);
+
+		// Group group = new Group(parent, SWT.NONE);
+		tabFolder = new TabFolder(leftComposite, SWT.FILL);
 		for (int loopIndex = 0; loopIndex < 3; loopIndex++) {
 			TabItem tabItem = new TabItem(tabFolder, SWT.NULL);
 			String header = "";
@@ -188,10 +212,30 @@ public class TreeTable {
 
 		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1,
 				1));
-		Label version = new Label(parent, SWT.BOTTOM | SWT.RIGHT | SWT.BORDER);
+		// Create the second text box and attach its left edge
+		// to the sash
+		// Text two = new Text(composite, SWT.BORDER);
+
+		Label version = new Label(leftComposite, SWT.BOTTOM | SWT.RIGHT
+				| SWT.BORDER);
 		version.setText(getVersionAndDate());
 		version.setLayoutData(new GridData(SWT.FILL, SWT.None, true, false, 1,
 				1));
+
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = 1;
+		leftComposite.setLayout(gridLayout);
+		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+		// gridData.heightHint = 66;
+		// gridData.widthHint = 500;
+		leftComposite.setLayoutData(gridData);
+
+		FormData data = new FormData();
+		data.top = new FormAttachment(0, 0);
+		data.bottom = new FormAttachment(100, 0);
+		data.left = new FormAttachment(sash, 0);
+		data.right = new FormAttachment(100, 0);
+		leftComposite.setLayoutData(data);
 
 	}
 
@@ -408,12 +452,12 @@ public class TreeTable {
 		// \ }
 	}
 
-	private void createGroupFields(final Composite parent) {
+	private void createGroupFields(final Composite parent, Sash sash) {
 		// Group parentGroup = new Group(parent, SWT.None);
 
-		SashForm sashForm2 = new SashForm(parent, SWT.VERTICAL);
+		// SashForm sashForm2 = new SashForm(parent, SWT.VERTICAL);
 
-		Group group = new Group(sashForm2, SWT.None);
+		Group group = new Group(parent, SWT.None);
 
 		openBtn = new Button(group, SWT.NONE);
 		openBtn.setText("Open WIS File");
@@ -488,6 +532,12 @@ public class TreeTable {
 		group.setLayoutData(gridData);
 
 		setTableLayout(group);
+		FormData data = new FormData();
+		data.top = new FormAttachment(0, 0);
+		data.bottom = new FormAttachment(100, 0);
+		data.left = new FormAttachment(0, 0);
+		data.right = new FormAttachment(sash, 0);
+		group.setLayoutData(data);
 	}
 
 	/**
