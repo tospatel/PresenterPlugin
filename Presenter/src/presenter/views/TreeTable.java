@@ -14,6 +14,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.PaintEvent;
@@ -31,7 +32,6 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Sash;
@@ -52,6 +52,7 @@ import presenter.util.FileExistenanceRecursive;
 import presenter.util.FileOperation;
 import presenter.util.JsonUtil;
 import presenter.util.PropertyFileUtil;
+import presenter.util.SortTreeListener;
 import presenter.util.Splitter;
 import presenter.util.StringUtility;
 
@@ -120,7 +121,7 @@ public class TreeTable {
 		logger.info(" Calling addChildControls ");
 		List<Object> splitterObjectList = new ArrayList<Object>();
 
-		Sash sash = Splitter.getSash(composite);
+		Sash sash = Splitter.getSash(composite, SWT.VERTICAL);
 		createGroupFields(composite, sash, splitterObjectList);
 
 		setSnippet(composite, sash, splitterObjectList);
@@ -232,6 +233,9 @@ public class TreeTable {
 
 		for (int colIndex = 0; colIndex < colName.length; colIndex++) {
 			TreeColumn column = new TreeColumn(tree, SWT.NONE);
+			if (colIndex == 0) {
+				column.addSelectionListener(new SortTreeListener());
+			}
 			column.setText(colName[colIndex]);
 			column.setWidth(columnsWidth[colIndex]);
 
@@ -347,6 +351,7 @@ public class TreeTable {
 		String vulnId = StringUtility.checkIfNullThenEmpty(collectionMap
 				.get("id"));
 		fileDtlRow.setText(FileTableColumnDtl.idIndex, vulnId);
+		// fileDtlRow.
 		fileDtlRow.setText(FileTableColumnDtl.appIdIndex, StringUtility
 				.checkIfNullThenEmpty(collectionMap.get("application_id")));
 		fileDtlRow.setText(FileTableColumnDtl.classIndex, StringUtility
@@ -439,22 +444,30 @@ public class TreeTable {
 	private void createGroupFields(final Composite parent, Sash sash,
 			List<Object> splitterObjectList) {
 
-		//
-		// Composite leftComposite = new Composite(parent, SWT.BORDER |
-		// SWT.CENTER
-		// | SWT.SHADOW_NONE);
-		Group group = new Group(parent, SWT.None);
-		openBtn = new Button(group, SWT.NONE);
+		Composite composite = new Composite(parent, SWT.None);
+
+		// final SashForm topSash = new SashForm(composite, SWT.HORIZONTAL);
+		// topSash.setLayout(new FillLayout());
+		// topSash.setLayoutData(new GridData(GridData.FILL_BOTH));
+		// final SashForm bottom = new SashForm(composite, SWT.HORIZONTAL);
+		// topSash.setWeights(new int[] { 1, 2 });
+		final SashForm sashForm = new SashForm(composite, SWT.VERTICAL);
+		// Sash topSash = Splitter.getSash(composite, SWT.HORIZONTAL);
+		Composite upComposite = new Composite(sashForm, SWT.BORDER);
+		Composite downComposite = new Composite(sashForm, SWT.BORDER);
+		// Group group = new Group(parent, SWT.None);
+		openBtn = new Button(upComposite, SWT.NONE);
 		openBtn.setText("Open WIS File");
 		openBtn.setLocation(0, 2);
 
-		filenameLbl = new Label(group, SWT.LEFT | SWT.NONE);
+		filenameLbl = new Label(upComposite, SWT.LEFT | SWT.NONE);
 		filenameLbl
 				.setText("                                                                                       ");
-		filenameLbl.setLocation(110, 2);
-		filenameLbl.setLayoutData(new GridData(SWT.FILL, SWT.None, true, false,
+		filenameLbl.setLocation(110, 10);
+		filenameLbl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true,
 				1, 1));
-		Canvas canvas = new Canvas(group, SWT.NONE);
+		filenameLbl.pack();
+		Canvas canvas = new Canvas(upComposite, SWT.NONE);
 		canvas.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
 				Image image = new Image(e.display,
@@ -471,10 +484,10 @@ public class TreeTable {
 		grid.heightHint = 30;
 		canvas.setLayoutData(grid);
 
-		Button button = new Button(group, SWT.PUSH);
+		Button button = new Button(upComposite, SWT.PUSH);
 		button.setText("External Src Folder");
 
-		createFolderTxt = new Text(group, SWT.LEFT | SWT.BORDER);
+		createFolderTxt = new Text(upComposite, SWT.LEFT | SWT.BORDER);
 		createFolderTxt.setLocation(135, 10);
 
 		Display display = Display.getDefault();
@@ -509,13 +522,66 @@ public class TreeTable {
 				false, 2, 1));
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 3;
-		group.setLayout(gridLayout);
-		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-		group.setLayoutData(gridData);
+		// gridLayout.marginHeight = 0;
+		// gridLayout.marginWidth = 0;
+		upComposite.setLayout(gridLayout);
+		// GridData gridData = new GridData(SWT.FILL, SWT.None, true, false, 1,
+		// 1);
+		// upComposite.setLayoutData(gridData);
 
-		setTableLayout(group);
+		setTableLayout(downComposite);
 
-		group.setLayoutData(Splitter.getLeftFormData(sash));
+		GridLayout downGridLayout = new GridLayout();
+		downGridLayout.numColumns = 1;
+		downGridLayout.marginHeight = 0;
+		downGridLayout.marginWidth = 0;
+		downComposite.setLayout(downGridLayout);
+		// GridData downGridData = new GridData(SWT.FILL, SWT.FILL, true, true,
+		// 1,
+		// 1);
+
+		upComposite
+				.setLayoutData(new GridData(SWT.None, SWT.None, false, false));
+		// GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		// gridData.grabExcessVerticalSpace = true;
+		// composite.setLayoutData(gridData);
+		downComposite
+				.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		// downComposite.setLayoutData(downGridData);
+
+		GridLayout grid1Layout = new GridLayout();
+		grid1Layout.numColumns = 1;
+		// grid1Layout.verticalSpacing=true;
+		composite.setLayout(grid1Layout);
+		GridData gridData = new GridData(SWT.FILL, SWT.None, true, false);
+		// gridData.grabExcessVerticalSpace = true;
+		composite.setLayoutData(gridData);
+		composite.setLayoutData(Splitter.getLeftFormData(sash));
+		// Add the Restore Weights functionality
+
+		// Change the width of the sashes
+		sashForm.setSashWidth(5);
+		// sashForm.setRegion(region);
+		sashForm.setWeights(new int[] { 3, 7 });
+		// Change the width of the sashes
+		// topSash.SASH_WIDTH = 20;
+
+		// Change the color used to paint the sashes
+		// sashForm.setBackground(parent.getDisplay().getSystemColor(
+		// SWT.COLOR_GREEN));
+		sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		// Change the color used to paint the sashes
+		// sashForm.setBackground(parent.getDisplay().getSystemColor(
+		// SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
+
+		// Set the relative weights for the buttons
+		// topSash.setWeights(new int[] { 3, 2 });
+		// sashForm.set
+		// composite.setLayout(new FormLayout());
+		// Sash sashHorizontal = Splitter.getSash(composite, SWT.HORIZONTAL);
+		// upComposite.setLayoutData(Splitter.getLeftFormData(sashHo));
+		// downComposite.setLayoutData(Splitter.getRightFormData(sash));
 		// splitterObjectList.add(leftComposite);
 	}
 
