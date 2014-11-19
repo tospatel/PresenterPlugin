@@ -2,7 +2,6 @@ package presenter.views;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -23,9 +22,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -56,6 +52,7 @@ import presenter.util.FileExistenanceRecursive;
 import presenter.util.FileOperation;
 import presenter.util.JsonUtil;
 import presenter.util.PropertyFileUtil;
+import presenter.util.Splitter;
 import presenter.util.StringUtility;
 
 public class TreeTable {
@@ -117,42 +114,13 @@ public class TreeTable {
 	 */
 	private void addChildControls(Composite composite) {
 		logger.info(" Calling addChildControls ");
+		List<Object> splitterObjectList = new ArrayList<Object>();
 
-		composite.setLayout(new FormLayout());
-		final Sash sash = new Sash(composite, SWT.VERTICAL);
-		FormData data = new FormData();
-		data.top = new FormAttachment(0, 0); // Attach to top
-		data.bottom = new FormAttachment(100, 0); // Attach to bottom
-		data.left = new FormAttachment(59, 0); // Attach halfway across
-		sash.setLayoutData(data);
-		Device device = Display.getCurrent();
-		sash.setBackground(device.getSystemColor(SWT.COLOR_DARK_GRAY));
-		// final int SASH_LIMIT = 20;
-		sash.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent event) {
-				// We reattach to the left edge, and we use the x value of the
-				// event to
-				// determine the offset from the left
-				((FormData) sash.getLayoutData()).left = new FormAttachment(0,
-						event.x);
-				// Rectangle rect = sash.getParent().getClientArea();
-				// event.x = Math.min(Math.max(event.x, SASH_LIMIT), rect.width
-				// - SASH_LIMIT);
-				// if (event.detail != SWT.DRAG) {
-				// sash.setBounds(event.x, event.y, event.width, event.height);
-				// // sashform.layout();
-				// }
-				// Until the parent window does a layout, the sash will not be
-				// redrawn in
-				// its new location.
-				sash.getParent().layout();
-			}
-		});
+		Sash sash = Splitter.getSash(composite);
+		createGroupFields(composite, sash, splitterObjectList);
 
-		createGroupFields(composite, sash);
-
-		setSnippet(composite, sash);
-
+		setSnippet(composite, sash, splitterObjectList);
+		// Splitter.verticalSplitter(composite, splitterObjectList);
 		setTableColumn();
 		createListner();
 		openPreviousJsonFile();
@@ -173,13 +141,14 @@ public class TreeTable {
 		tree.setLinesVisible(true);
 	}
 
-	public void setSnippet(Composite parent, Sash sash) {
+	public void setSnippet(Composite parent, Sash sash,
+			List<Object> splitterObjectList) {
 
-		Composite leftComposite = new Composite(parent, SWT.BORDER | SWT.CENTER
-				| SWT.SHADOW_NONE);
+		Composite rightComposite = new Composite(parent, SWT.BORDER
+				| SWT.CENTER | SWT.SHADOW_NONE);
 
 		// Group group = new Group(parent, SWT.NONE);
-		tabFolder = new TabFolder(leftComposite, SWT.FILL);
+		tabFolder = new TabFolder(rightComposite, SWT.FILL);
 		for (int loopIndex = 0; loopIndex < 3; loopIndex++) {
 			TabItem tabItem = new TabItem(tabFolder, SWT.NULL);
 			String header = "";
@@ -216,7 +185,7 @@ public class TreeTable {
 		// to the sash
 		// Text two = new Text(composite, SWT.BORDER);
 
-		Label version = new Label(leftComposite, SWT.BOTTOM | SWT.RIGHT
+		Label version = new Label(rightComposite, SWT.BOTTOM | SWT.RIGHT
 				| SWT.BORDER);
 		version.setText(getVersionAndDate());
 		version.setLayoutData(new GridData(SWT.FILL, SWT.None, true, false, 1,
@@ -224,18 +193,14 @@ public class TreeTable {
 
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 1;
-		leftComposite.setLayout(gridLayout);
+		rightComposite.setLayout(gridLayout);
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		// gridData.heightHint = 66;
 		// gridData.widthHint = 500;
-		leftComposite.setLayoutData(gridData);
+		rightComposite.setLayoutData(gridData);
 
-		FormData data = new FormData();
-		data.top = new FormAttachment(0, 0);
-		data.bottom = new FormAttachment(100, 0);
-		data.left = new FormAttachment(sash, 0);
-		data.right = new FormAttachment(100, 0);
-		leftComposite.setLayoutData(data);
+		rightComposite.setLayoutData(Splitter.getRightFormData(sash));
+		// splitterObjectList.add(rightComposite);
 
 	}
 
@@ -290,32 +255,29 @@ public class TreeTable {
 						totalVulnSize = fileList.getCollection().size();
 
 						for (Object collection : fileList.getCollection()) {
-							final Map collectionMap = Collections
-									.synchronizedMap((LinkedHashMap) collection);
-							synchronized (collectionMap) {
-								if (collectionMap != null) {
+							final Map collectionMap = (LinkedHashMap) collection;
+							if (collectionMap != null) {
 
-									index++;
-									Display.getDefault().asyncExec(
-											new Runnable() {
-												public void run() {
+								index++;
+								Display.getDefault().asyncExec(new Runnable() {
+									public void run() {
 
-													createTreeItem(collectionMap);
+										createTreeItem(collectionMap);
 
-												}
-											});
-
-									if (index % 3 == 0) {
-										try {
-
-											Thread.sleep(2000);
-										} catch (InterruptedException e) {
-											logger.error(e);
-										}
 									}
+								});
 
+								if (index % 4 == 0) {
+									try {
+
+										Thread.sleep(2000);
+									} catch (InterruptedException e) {
+										logger.error(e);
+									}
 								}
+
 							}
+
 						}
 
 					}
@@ -452,13 +414,14 @@ public class TreeTable {
 		// \ }
 	}
 
-	private void createGroupFields(final Composite parent, Sash sash) {
-		// Group parentGroup = new Group(parent, SWT.None);
+	private void createGroupFields(final Composite parent, Sash sash,
+			List<Object> splitterObjectList) {
 
-		// SashForm sashForm2 = new SashForm(parent, SWT.VERTICAL);
-
+		//
+		// Composite leftComposite = new Composite(parent, SWT.BORDER |
+		// SWT.CENTER
+		// | SWT.SHADOW_NONE);
 		Group group = new Group(parent, SWT.None);
-
 		openBtn = new Button(group, SWT.NONE);
 		openBtn.setText("Open WIS File");
 		openBtn.setLocation(0, 2);
@@ -478,7 +441,6 @@ public class TreeTable {
 								.getResourceAsStream(
 										"presenter/views/whslogoalpha.png"));
 				e.gc.drawImage(image, -5, 0);
-				// e.gc.drawImage(image, 0, 0, 100, 100, 200, 10, 200, 50);
 			}
 		});
 
@@ -527,17 +489,12 @@ public class TreeTable {
 		gridLayout.numColumns = 3;
 		group.setLayout(gridLayout);
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-		// gridData.heightHint = 66;
-		// gridData.widthHint = 500;
 		group.setLayoutData(gridData);
 
 		setTableLayout(group);
-		FormData data = new FormData();
-		data.top = new FormAttachment(0, 0);
-		data.bottom = new FormAttachment(100, 0);
-		data.left = new FormAttachment(0, 0);
-		data.right = new FormAttachment(sash, 0);
-		group.setLayoutData(data);
+
+		group.setLayoutData(Splitter.getLeftFormData(sash));
+		// splitterObjectList.add(leftComposite);
 	}
 
 	/**
