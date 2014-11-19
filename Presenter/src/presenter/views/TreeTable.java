@@ -60,13 +60,16 @@ public class TreeTable {
 	private Label filenameLbl;
 	private Button openBtn;
 	private Tree tree;
-	private IWorkbenchPage wbPage;
-	private String dirPath;
+	// private IWorkbenchPage wbPage;
+	// private String dirPath;
 	private TreeItem parentItem;
 	private String description;
 	private String solution;
-	private Label createFolderLbl;
+	private String traceId;
+	// private Label createFolderLbl;
 	private Text createFolderTxt;
+	private Map<String, Map<String, String>> vulnDetailsMap = new HashMap<String, Map<String, String>>();
+	private Map<String, String> vulnMap;
 	/* ID to store Layout-Data with TreeColumns */
 	//  private static final String LAYOUT_DATA = "org.rssowl.ui.internal.CTreeLayoutData"; //$NON-NLS-1$
 	private String[] colName = { FileTableColumnDtl.id,
@@ -79,7 +82,8 @@ public class TreeTable {
 			FileTableColumnDtl.lineNo, FileTableColumnDtl.colStart,
 			FileTableColumnDtl.colEnd, FileTableColumnDtl.hash,
 			FileTableColumnDtl.description, FileTableColumnDtl.solution,
-			FileTableColumnDtl.compliance, FileTableColumnDtl.formattedCode };
+			FileTableColumnDtl.compliance, FileTableColumnDtl.formattedCode,
+			FileTableColumnDtl.stepId };
 	private TreeItem selectTreeItem;
 	private boolean itemSelection = false;
 	private int totalVulnSize = 0, itemFillInTable = 0;
@@ -101,8 +105,8 @@ public class TreeTable {
 	public TreeTable(Composite parent, IWorkbenchPage wbPage,
 			String workSpacePath, IWorkspace workspace) {
 		this.parent = parent;
-		this.wbPage = wbPage;
-		this.dirPath = workSpacePath;
+		// this.wbPage = wbPage;
+		// this.dirPath = workSpacePath;
 		// this.workspace = workspace;
 		this.addChildControls(parent);
 	}
@@ -123,7 +127,7 @@ public class TreeTable {
 		// Splitter.verticalSplitter(composite, splitterObjectList);
 		setTableColumn();
 		createListner();
-		openPreviousJsonFile();
+		// openPreviousJsonFile();
 	}
 
 	/**
@@ -223,7 +227,8 @@ public class TreeTable {
 				FileTableColumnDtl.descriptionWidth,
 				FileTableColumnDtl.solutionWidth,
 				FileTableColumnDtl.complianceWidth,
-				FileTableColumnDtl.formattedCodeWidth };
+				FileTableColumnDtl.formattedCodeWidth,
+				FileTableColumnDtl.stepWidth };
 
 		for (int colIndex = 0; colIndex < colName.length; colIndex++) {
 			TreeColumn column = new TreeColumn(tree, SWT.NONE);
@@ -241,7 +246,7 @@ public class TreeTable {
 	 */
 	public void setFileDetailList(final Issue fileList) {
 		tree.removeAll();
-		fileNamePath = new LinkedHashMap<String, String>();
+		fileNamePath = new HashMap<String, String>();
 		if (fileList != null) {
 
 			try {
@@ -326,7 +331,7 @@ public class TreeTable {
 	 * @param endIndex
 	 * @param totalFileSize
 	 */
-	private synchronized void createTreeItem(Map collectionMap) {
+	private void createTreeItem(Map collectionMap) {
 
 		// for (int index = startIndex; index < totalFileSize && index <
 		// endIndex; index++) {
@@ -339,9 +344,9 @@ public class TreeTable {
 		fileDtlRow.setBackground(device
 				.getSystemColor(SWT.COLOR_TITLE_FOREGROUND));
 		fileDtlRow.setForeground(device.getSystemColor(SWT.COLOR_WHITE));
-
-		fileDtlRow.setText(FileTableColumnDtl.idIndex,
-				StringUtility.checkIfNullThenEmpty(collectionMap.get("id")));
+		String vulnId = StringUtility.checkIfNullThenEmpty(collectionMap
+				.get("id"));
+		fileDtlRow.setText(FileTableColumnDtl.idIndex, vulnId);
 		fileDtlRow.setText(FileTableColumnDtl.appIdIndex, StringUtility
 				.checkIfNullThenEmpty(collectionMap.get("application_id")));
 		fileDtlRow.setText(FileTableColumnDtl.classIndex, StringUtility
@@ -367,8 +372,11 @@ public class TreeTable {
 			LinkedHashMap traceMap = (LinkedHashMap) stepObject;
 
 			TreeItem traceDtlRow = new TreeItem(fileDtlRow, SWT.NONE);
+			String trace = StringUtility.checkIfNullThenEmpty(traceMap
+					.get("id"));
 			traceDtlRow.setText(FileTableColumnDtl.traceIdIndex,
-					StringUtility.checkIfNullThenEmpty(traceMap.get("id")));
+					StringUtility.checkIfNullThenEmpty(trace));
+
 			LinkedHashMap stepMap = (LinkedHashMap) traceMap.get("steps");
 			List stepList = (List) stepMap.get("collection");
 			traceDtlRow.setBackground(device
@@ -376,6 +384,7 @@ public class TreeTable {
 			for (Object stepColllection : stepList) {
 				LinkedHashMap step = (LinkedHashMap) stepColllection;
 				TreeItem stepDtlRow = new TreeItem(traceDtlRow, SWT.NONE);
+				Map<String, String> stepDetailsMap = new HashMap<String, String>();
 				stepDtlRow.setText(FileTableColumnDtl.nameIndex,
 						StringUtility.checkIfNullThenEmpty(step.get("kind")));
 				stepDtlRow.setText(FileTableColumnDtl.fileIndex, StringUtility
@@ -387,7 +396,8 @@ public class TreeTable {
 				// .lastIndexOf(File.separator) + 1);
 				String file = StringUtility.checkIfNullThenEmpty(step
 						.get("filename"));
-
+				String stepId = StringUtility.checkIfNullThenEmpty(step
+						.get("id"));
 				fileNamePath.put(
 						file.substring(file.lastIndexOf(File.separator) + 1),
 						"");
@@ -395,13 +405,25 @@ public class TreeTable {
 				stepDtlRow.setText(FileTableColumnDtl.locationIndex,
 						StringUtility.checkIfNullThenEmpty(step
 								.get("relative_line_number")));
-				stepDtlRow.setText(FileTableColumnDtl.codeIndex, Base64Util
+
+				stepDetailsMap.put(FileTableColumnDtl.code, Base64Util
 						.decode(StringUtility.checkIfNullThenEmpty(step
 								.get("formatted_code"))));
 
-				stepDtlRow.setText(FileTableColumnDtl.formattedCodeIndex,
-						Base64Util.decode(StringUtility
-								.checkIfNullThenEmpty(step.get("code"))));
+				stepDetailsMap.put(FileTableColumnDtl.formattedCode, Base64Util
+						.decode(StringUtility.checkIfNullThenEmpty(step
+								.get("code"))));
+
+				vulnDetailsMap.put(trace + "/" + stepId, stepDetailsMap);
+				stepDtlRow.setText(FileTableColumnDtl.stepIndex,
+						StringUtility.checkIfNullThenEmpty(step.get("id")));
+				// stepDtlRow.setText(FileTableColumnDtl.codeIndex, Base64Util
+				// .decode(StringUtility.checkIfNullThenEmpty(step
+				// .get("formatted_code"))));
+				//
+				// stepDtlRow.setText(FileTableColumnDtl.formattedCodeIndex,
+				// Base64Util.decode(StringUtility
+				// .checkIfNullThenEmpty(step.get("code"))));
 				stepDtlRow.setText(FileTableColumnDtl.startLineIndex,
 						StringUtility.checkIfNullThenEmpty(step
 								.get("start_line_number")));
@@ -550,8 +572,11 @@ public class TreeTable {
 							.isEmpty()) {
 						fileNamePath.put(AppConstant.folderTextFieldName,
 								createFolderTxt.getText());
+						// vulnDetailsMap
+
+						// fileNamePath.put(AppConstant.codeDetails,
 						FileOperation.checkFileExist(selectTreeItem,
-								fileNamePathUpdated, fileNamePath);
+								fileNamePathUpdated, fileNamePath, vulnMap);
 					}
 				}
 
@@ -565,6 +590,13 @@ public class TreeTable {
 				selectTreeItem = (TreeItem) e.item;
 				itemSelection = true;
 				if (tabItemList.size() > 0) {
+
+					String id = traceId
+							+ "/"
+							+ selectTreeItem
+									.getText(FileTableColumnDtl.stepIndex);
+					vulnMap = vulnDetailsMap.get(id);
+
 					updateTabSection();
 				}
 			}
@@ -584,7 +616,9 @@ public class TreeTable {
 				if (sol != null && !sol.isEmpty()) {
 					solution = sol;
 				}
-
+				String trace = parentItem
+						.getText(FileTableColumnDtl.traceIdIndex);
+				traceId = (trace != null && !trace.isEmpty()) ? trace : "";
 				// System.out.println("Expand={" + e.item + "}");
 			}
 		});
@@ -627,40 +661,16 @@ public class TreeTable {
 	public void updateTabSection() {
 		Browser browse = tabItemList.get(0);
 
-		/*
-		 * 
-		 * browse.setText("<pre>" +
-		 * selectTreeItem.getText(FileTableColumnDtl.codeIndex).replace( "\n",
-		 * "<br/>") + "<pre/>");
-		 */
-		if (parentItem != null
-				&& parentItem.getText(FileTableColumnDtl.codeIndex) != null) {
-			browse.setText(selectTreeItem.getText(FileTableColumnDtl.codeIndex));
-			// Prabhu:
-			// I modified the codeIndex field to have the formattedCode info,
-			// you
-			// will have to modify/add the field as a separate item
-
-			String ss0 = new String();
-			ss0 = "<script>" + "var aa=\""
-					+ selectTreeItem.getText(FileTableColumnDtl.codeIndex)
-					+ "\";"
-					// + "alert(aa);"
-					+ "document.write(aa);" + "</script>";
+		if (vulnMap != null && vulnMap.get(FileTableColumnDtl.code) != null) {
+			browse.setText(vulnMap.get(FileTableColumnDtl.code).toString());
 		}
 		Browser browseDesc = tabItemList.get(1);
-
-		// browseDesc.setText("<pre>"
-		// + selectTreeItem.getText(FileTableColumnDtl.descriptionIndex)
-		// .replace("\n", "<br/>") + "<pre/>");
 
 		if (description != null) {
 			String ss = new String();
 			ss = "<script>" + "var aa=\"" + description + "\";"
 			// + "alert(aa);"
 					+ "document.write(aa);" + "</script>";
-
-			// browseDesc.setText(selectTreeItem.getText(FileTableColumnDtl.descriptionIndex));
 
 			browseDesc.setText(ss);
 		}

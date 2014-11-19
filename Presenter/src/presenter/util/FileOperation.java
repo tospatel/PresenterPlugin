@@ -43,6 +43,7 @@ public class FileOperation {
 	final static Logger logger = Logger.getLogger(FileOperation.class);
 
 	diff_match_patch diffutil = new diff_match_patch();
+	private static Map<String, String> vulnDetailsMap;
 
 	private FileOperation() {
 	}
@@ -57,10 +58,12 @@ public class FileOperation {
 	 * @param fileNamePath
 	 */
 	public static void checkFileExist(final TreeItem selectTreeItem,
-			boolean fileNamePathUpdated, final Map<String, String> fileNamePath) {
+			boolean fileNamePathUpdated,
+			final Map<String, String> fileNamePath,
+			Map<String, String> vulnDtlMap) {
 
 		String fileName = selectTreeItem.getText(FileTableColumnDtl.fileIndex);
-
+		vulnDetailsMap = vulnDtlMap;
 		String fullPath = null;
 		String fileExist = "";
 		if (!fileName.isEmpty()) {
@@ -362,9 +365,12 @@ public class FileOperation {
 			final TreeItem selectTreeItem, int line) {
 		// String codeForMatching = null;
 		List<Object> lineContent = new ArrayList<Object>();
-		String[] lineDetails = selectTreeItem
-				.getText(FileTableColumnDtl.formattedCodeIndex)
-				.replaceAll("\\r", "").split("\\n");
+		// String[] lineDetails = selectTreeItem
+		// .getText(FileTableColumnDtl.formattedCodeIndex)
+		// .replaceAll("\\r", "").split("\\n");
+		String[] lineDetails = vulnDetailsMap
+				.get(FileTableColumnDtl.formattedCode).replaceAll("\\r", "")
+				.split("\\n");
 
 		lineContent.add(lineDetails[line]);
 		lineContent.add(line);
@@ -434,9 +440,13 @@ public class FileOperation {
 			final TreeItem selectTreeItem, int line) {
 		// String codeForMatching = null;
 		List<Object> lineContent = new ArrayList<Object>();
-		String[] lineDetails = selectTreeItem
-				.getText(FileTableColumnDtl.formattedCodeIndex)
-				.replaceAll("\\r", "").split("\\n");
+		// String[] lineDetails = selectTreeItem
+		// .getText(FileTableColumnDtl.formattedCodeIndex)
+		// .replaceAll("\\r", "").split("\\n");
+		String[] lineDetails = vulnDetailsMap
+				.get(FileTableColumnDtl.formattedCode).replaceAll("\\r", "")
+				.split("\\n");
+
 		int startLine = getIntForStringData(selectTreeItem
 				.getText(FileTableColumnDtl.startLineIndex));
 		// int endLine = getIntForStringData(selectTreeItem

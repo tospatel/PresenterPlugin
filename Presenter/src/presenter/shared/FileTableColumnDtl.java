@@ -23,7 +23,7 @@ public interface FileTableColumnDtl {
 	String status = "Status";
 	String formattedCode = "formattedCode";
 	String traceId = "Trace Id";
-
+	String stepId = "StepId";
 	int idIndex = 0;
 	int traceIdIndex = 1;
 	int nameIndex = 2;
@@ -47,6 +47,7 @@ public interface FileTableColumnDtl {
 	int solutionIndex = 18;
 	int complianceIndex = 19;
 	int formattedCodeIndex = 20;
+	int stepIndex = 21;
 
 	int idWidth = 55;
 	int statusWidth = 80;
@@ -62,7 +63,7 @@ public interface FileTableColumnDtl {
 	int endLineWidth = 0;
 	int lineNoWidth = 0;
 	int hashWidth = 0;
-
+	int stepWidth = 0;
 	int descriptionWidth = 0;
 	int solutionWidth = 0;
 	int complianceWidth = 0;
