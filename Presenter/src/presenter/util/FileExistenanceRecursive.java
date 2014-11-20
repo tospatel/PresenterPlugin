@@ -31,7 +31,7 @@ public class FileExistenanceRecursive {
 	 */
 	public static String checkingDirectoryForFile(String dirPath,
 			String fileCheck) {
-
+		logger.info("fileCheck===========> " + fileCheck);
 		boolean recursiveSearch = true;
 		Object fileFilter = new String(fileCheck);
 		boolean wait = false;
@@ -62,8 +62,17 @@ public class FileExistenanceRecursive {
 
 				if (item instanceof javaxt.io.File) {
 					javaxt.io.File file = (javaxt.io.File) item;
-					logger.info("File Found " + file.toString());
-					return file.toString();
+					String fileNm = file.toString();
+					logger.info("file=== "
+							+ file.toString()
+							+ "  >>>   "
+							+ (fileNm.toString().substring(fileNm
+									.lastIndexOf(File.separator) + 1)));
+					if (fileCheck.equals(fileNm.toString().substring(
+							fileNm.lastIndexOf(File.separator) + 1))) {
+						logger.info("File Found===========> " + file.toString());
+						return file.toString();
+					}
 				} else {
 					javaxt.io.Directory dir = (javaxt.io.Directory) item;
 				}
@@ -124,8 +133,8 @@ public class FileExistenanceRecursive {
 						// fileCheck.
 						// fileCheck.put("AbstractLesson.java","123");
 						// fileCheck.containsKey("AbstractLesson.java")
-						logger.info("key " + aFile.getName() + " fileExist "
-								+ aFile.getAbsolutePath());
+						logger.info("File Found ====> " + aFile.getName()
+								+ "   " + aFile.getAbsolutePath());
 						// return filePath;
 
 					}

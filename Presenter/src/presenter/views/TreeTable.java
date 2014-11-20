@@ -14,15 +14,16 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -233,14 +234,15 @@ public class TreeTable {
 
 		for (int colIndex = 0; colIndex < colName.length; colIndex++) {
 			TreeColumn column = new TreeColumn(tree, SWT.NONE);
-			if (colIndex == 0) {
-				column.addSelectionListener(new SortTreeListener());
-			}
+
 			column.setText(colName[colIndex]);
 			column.setWidth(columnsWidth[colIndex]);
-
+			if (columnsWidth[colIndex] != 0) {
+				column.addSelectionListener(new SortTreeListener());
+			}
 		}
-
+		// tree.setRedraw(true);
+		// tree.setHeaderVisible(false);
 	}
 
 	/**
@@ -451,22 +453,33 @@ public class TreeTable {
 		// topSash.setLayoutData(new GridData(GridData.FILL_BOTH));
 		// final SashForm bottom = new SashForm(composite, SWT.HORIZONTAL);
 		// topSash.setWeights(new int[] { 1, 2 });
-		final SashForm sashForm = new SashForm(composite, SWT.VERTICAL);
+		// final SashForm sashForm = new SashForm(composite, SWT.VERTICAL);
 		// Sash topSash = Splitter.getSash(composite, SWT.HORIZONTAL);
-		Composite upComposite = new Composite(sashForm, SWT.BORDER);
-		Composite downComposite = new Composite(sashForm, SWT.BORDER);
+		Composite upComposite = new Composite(composite, SWT.BORDER);
+		Device device = Display.getCurrent();
+		// upComposite.setBackground(device.getSystemColor(SWT.COLOR_GRAY));
+		upComposite.setBackground(new Color(device, new RGB(240, 240, 240)));
+		Composite downComposite = new Composite(composite, SWT.BORDER);
 		// Group group = new Group(parent, SWT.None);
 		openBtn = new Button(upComposite, SWT.NONE);
 		openBtn.setText("Open WIS File");
-		openBtn.setLocation(0, 2);
+		// openBtn.setLocation(0, 2);
+		GridData btnGridData = new GridData(SWT.None, SWT.None, false, false,
+				1, 1);
+		btnGridData.verticalIndent = -4;
+		openBtn.setLayoutData(btnGridData);
 
 		filenameLbl = new Label(upComposite, SWT.LEFT | SWT.NONE);
-		filenameLbl
-				.setText("                                                                                       ");
-		filenameLbl.setLocation(110, 10);
-		filenameLbl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true,
-				1, 1));
-		filenameLbl.pack();
+		// filenameLbl
+		// .setText("           `                                                                            ");
+		// filenameLbl.setLocation(110, 10);
+		GridData lblGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 1,
+				1);
+		// lblGridData.exclude = false;
+		// lblGridData.heightHint = 30;
+		// lblGridData.verticalIndent = 2;
+		filenameLbl.setLayoutData(lblGridData);
+		// filenameLbl.pack();
 		Canvas canvas = new Canvas(upComposite, SWT.NONE);
 		canvas.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
@@ -481,14 +494,19 @@ public class TreeTable {
 
 		GridData grid = new GridData(SWT.FILL, SWT.None, false, false, 1, 1);
 		grid.widthHint = 180;
-		grid.heightHint = 30;
+		grid.heightHint = 25;
 		canvas.setLayoutData(grid);
 
 		Button button = new Button(upComposite, SWT.PUSH);
 		button.setText("External Src Folder");
 
+		GridData btnExtGridData = new GridData(SWT.None, SWT.None, false,
+				false, 1, 1);
+		btnExtGridData.verticalIndent = -2;
+		button.setLayoutData(btnExtGridData);
+
 		createFolderTxt = new Text(upComposite, SWT.LEFT | SWT.BORDER);
-		createFolderTxt.setLocation(135, 10);
+		// createFolderTxt.setLocation(135, 10);
 
 		Display display = Display.getDefault();
 		final Shell shell = new Shell(display);
@@ -523,7 +541,7 @@ public class TreeTable {
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 3;
 		// gridLayout.marginHeight = 0;
-		// gridLayout.marginWidth = 0;
+		// gridLayout.marginWidth = 2;
 		upComposite.setLayout(gridLayout);
 		// GridData gridData = new GridData(SWT.FILL, SWT.None, true, false, 1,
 		// 1);
@@ -533,15 +551,16 @@ public class TreeTable {
 
 		GridLayout downGridLayout = new GridLayout();
 		downGridLayout.numColumns = 1;
-		downGridLayout.marginHeight = 0;
-		downGridLayout.marginWidth = 0;
+		// downGridLayout.marginHeight = 5;
+		// downGridLayout.marginWidth = 0;
 		downComposite.setLayout(downGridLayout);
 		// GridData downGridData = new GridData(SWT.FILL, SWT.FILL, true, true,
 		// 1,
 		// 1);
-
-		upComposite
-				.setLayoutData(new GridData(SWT.None, SWT.None, false, false));
+		GridData upCompositeGrid = new GridData(SWT.FILL, SWT.None, true, false);
+		upCompositeGrid.heightHint = 57;
+		upComposite.setLayoutData(upCompositeGrid);
+		// upComposite.setSize(400, 80);
 		// GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		// gridData.grabExcessVerticalSpace = true;
 		// composite.setLayoutData(gridData);
@@ -561,16 +580,16 @@ public class TreeTable {
 		// Add the Restore Weights functionality
 
 		// Change the width of the sashes
-		sashForm.setSashWidth(5);
+		// sashForm.setSashWidth(5);
 		// sashForm.setRegion(region);
-		sashForm.setWeights(new int[] { 3, 7 });
+		// sashForm.setWeights(new int[] { 2, 5 });
 		// Change the width of the sashes
 		// topSash.SASH_WIDTH = 20;
 
 		// Change the color used to paint the sashes
 		// sashForm.setBackground(parent.getDisplay().getSystemColor(
 		// SWT.COLOR_GREEN));
-		sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		// sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		// Change the color used to paint the sashes
 		// sashForm.setBackground(parent.getDisplay().getSystemColor(
 		// SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
@@ -659,8 +678,8 @@ public class TreeTable {
 
 					String id = traceId
 							+ "/"
-							+ selectTreeItem
-									.getText(FileTableColumnDtl.stepIndex);
+							+ StringUtility.checkIfNullThenEmpty(selectTreeItem
+									.getText(FileTableColumnDtl.stepIndex));
 					vulnMap = vulnDetailsMap.get(id);
 
 					updateTabSection();

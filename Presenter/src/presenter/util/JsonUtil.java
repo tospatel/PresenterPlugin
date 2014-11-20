@@ -36,6 +36,9 @@ public class JsonUtil {
 		} catch (JsonGenerationException e) {
 			logger.error(e);
 
+			MessageBoxView.show(PropertyFileUtil.getProp().getProperty(
+					"jsonFileError"));
+
 		} catch (JsonMappingException e) {
 
 			logger.error(e);
@@ -47,6 +50,8 @@ public class JsonUtil {
 
 			logger.error(e);
 
+			MessageBoxView.show(PropertyFileUtil.getProp().getProperty(
+					"jsonFileError"));
 		}
 
 		return fileList;

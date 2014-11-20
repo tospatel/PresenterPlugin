@@ -54,7 +54,7 @@ public interface FileTableColumnDtl {
 	int nameWidth = 120;
 	int traceIdWidth = 60;
 	int fileWidth = 150;
-	int riskWidth = 80;
+	int riskWidth = 400;
 	int classWidth = 100;
 	int appIdWidth = 55;
 	int locationWidth = 0;
