@@ -39,7 +39,7 @@ public class FileView extends ViewPart implements IViewData {
 	private String fileName;
 	private Composite parent;
 	private Label label;
-
+	private TreeTable treeTable;
 	// public FileView() {
 	// }
 	/**
@@ -60,7 +60,7 @@ public class FileView extends ViewPart implements IViewData {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		String workSpacePath = workspace.getRoot().getLocation().toFile()
 				.getPath().toString();
-		new TreeTable(parent, PlatformUI.getWorkbench()
+		treeTable = new TreeTable(parent, PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage(), workSpacePath,
 				workspace);
 	}
@@ -78,11 +78,11 @@ public class FileView extends ViewPart implements IViewData {
 		Display.getDefault().syncExec(new Runnable() {
 			@Override
 			public void run() {
-				// TreeTable treeTable = new TreeTable();
+				// treeTable = new TreeTable();
 				// treeTable.getFilenameLbl().setText(message);
-				// treeTable.fillTable(message);
-				label.setText(message);
-				label.pack();
+				treeTable.fillTable(message);
+				// label.setText(message);
+				// label.pack();
 				// treeTable.pack(true);
 
 			}
