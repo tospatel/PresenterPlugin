@@ -322,8 +322,9 @@ public class FileOperation {
 			Shell shell = new Shell();
 			shell.setLocation(400, 350);
 			CustomFileBrowseDialog dialog = new CustomFileBrowseDialog(shell,
-					PropertyFileUtil.getProp().getProperty("msg"),
 					PropertyFileUtil.getProp().getProperty("fileNotExist"),
+					PropertyFileUtil.getProp().getProperty("browseFile")
+							+ rowSelectedFileName,
 					wbPage);
 			dialog.open(fileNamePath, selectTreeItem);
 		}

@@ -1,11 +1,12 @@
 package presenter.views;
 
 import org.apache.log4j.Logger;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
@@ -28,40 +29,40 @@ import presenter.util.customproject.CustomProjectSupport;
  * <p>
  */
 
-public class FileView extends ViewPart {
+public class FileView extends ViewPart implements IViewData {
 
 	/**
 	 * The ID of the view as specified by the extension.
 	 */
 	public static final String ID = "presenter.views.FileView";
 	final static Logger logger = Logger.getLogger(FileView.class);
+	private String fileName;
+	private Composite parent;
+	private Label label;
 
+	// public FileView() {
+	// }
 	/**
 	 * Main method from where plugin start
 	 */
 
 	public void createPartControl(Composite parent) {
-		// SashFormDemo.open();
-		// Snippet107.open();
-		DailyRollingLogFiles.createLogFile();
-		// LwjglSwtExample.addNewCanvas();
-		logger.info("Invoke main method - createPartControl() for plugin");
 
+		this.parent = parent;
+		label = new Label(parent, SWT.NONE); // label is a field
+		// label.setVisible(false);
+		DailyRollingLogFiles.createLogFile();
+		logger.info("Invoke main method - createPartControl() for plugin ");
 		CustomProjectSupport.deleteTempProject();
 		new PropertyFileUtil().loadPropertyFile();
+
 		// get object which represents the workspace
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		String workSpacePath = workspace.getRoot().getLocation().toFile()
 				.getPath().toString();
-		IWorkspaceRoot root = workspace.getRoot();
-		// Get all projects in the workspace
-		IProject[] projects = root.getProjects();
-		// projects[0].getProject().getLocationURI()
-
 		new TreeTable(parent, PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage(), workSpacePath,
 				workspace);
-
 	}
 
 	/**
@@ -69,5 +70,23 @@ public class FileView extends ViewPart {
 	 */
 	public void setFocus() {
 		// viewer.getControl().setFocus();
+
 	}
+
+	@Override
+	public void setMessage(final String message) {
+		Display.getDefault().syncExec(new Runnable() {
+			@Override
+			public void run() {
+				// TreeTable treeTable = new TreeTable();
+				// treeTable.getFilenameLbl().setText(message);
+				// treeTable.fillTable(message);
+				label.setText(message);
+				label.pack();
+				// treeTable.pack(true);
+
+			}
+		});
+	}
+
 }

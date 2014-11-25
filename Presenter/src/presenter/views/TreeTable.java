@@ -31,10 +31,8 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
@@ -64,13 +62,13 @@ public class TreeTable {
 	private Tree tree;
 	// private IWorkbenchPage wbPage;
 	// private String dirPath;
-	private TreeItem parentItem;
+	// private TreeItem parentItem;
 	private String description;
 	private String solution;
 	private String traceId;
 	// private Label createFolderLbl;
 	private Text createFolderTxt;
-	private Map<String, Map<String, String>> vulnDetailsMap = new HashMap<String, Map<String, String>>();
+	private Map<String, Map<String, String>> vulnDetailsMap;
 	private Map<String, String> vulnMap;
 	/* ID to store Layout-Data with TreeColumns */
 	//  private static final String LAYOUT_DATA = "org.rssowl.ui.internal.CTreeLayoutData"; //$NON-NLS-1$
@@ -96,6 +94,10 @@ public class TreeTable {
 	final static Logger logger = Logger.getLogger(TreeTable.class);
 	private TabFolder tabFolder = null;
 
+	public TreeTable() {
+
+	}
+
 	/**
 	 * Constructor allow to show table
 	 * 
@@ -110,6 +112,9 @@ public class TreeTable {
 		// this.wbPage = wbPage;
 		// this.dirPath = workSpacePath;
 		// this.workspace = workspace;
+		vulnDetailsMap = null;
+		vulnDetailsMap = new HashMap<String, Map<String, String>>();
+		vulnMap = null;
 		this.addChildControls(parent);
 	}
 
@@ -123,12 +128,13 @@ public class TreeTable {
 		List<Object> splitterObjectList = new ArrayList<Object>();
 
 		Sash sash = Splitter.getSash(composite, SWT.VERTICAL);
-		createGroupFields(composite, sash, splitterObjectList);
+		createCompositePanel(composite, sash, splitterObjectList);
 
 		setSnippet(composite, sash, splitterObjectList);
 		// Splitter.verticalSplitter(composite, splitterObjectList);
 		setTableColumn();
 		createListner();
+		// fillTable(fileNm);
 		// openPreviousJsonFile();
 	}
 
@@ -339,21 +345,23 @@ public class TreeTable {
 	 */
 	private void createTreeItem(Map collectionMap) {
 
-		// for (int index = startIndex; index < totalFileSize && index <
-		// endIndex; index++) {
-		// logger.info("-----------start createTreeItem");
 		TreeItem fileDtlRow = new TreeItem(tree, SWT.NONE);
+		Map<String, String> descSolMap = new HashMap<String, String>();
 
-		// for (Object collection : fileList.getCollection()) {
-		// LinkedHashMap collectionMap = (LinkedHashMap) collection;
 		Device device = Display.getCurrent();
 		fileDtlRow.setBackground(device
 				.getSystemColor(SWT.COLOR_TITLE_FOREGROUND));
 		fileDtlRow.setForeground(device.getSystemColor(SWT.COLOR_WHITE));
 		String vulnId = StringUtility.checkIfNullThenEmpty(collectionMap
 				.get("id"));
+
+		descSolMap.put(FileTableColumnDtl.description, StringUtility
+				.checkIfNullThenEmpty(collectionMap.get("description")));
+		descSolMap.put(FileTableColumnDtl.solution, StringUtility
+				.checkIfNullThenEmpty(collectionMap.get("solution")));
+		vulnDetailsMap.put(vulnId, descSolMap);
+		fileDtlRow.setText(FileTableColumnDtl.descriptionIndex, vulnId);
 		fileDtlRow.setText(FileTableColumnDtl.idIndex, vulnId);
-		// fileDtlRow.
 		fileDtlRow.setText(FileTableColumnDtl.appIdIndex, StringUtility
 				.checkIfNullThenEmpty(collectionMap.get("application_id")));
 		fileDtlRow.setText(FileTableColumnDtl.classIndex, StringUtility
@@ -363,10 +371,6 @@ public class TreeTable {
 		fileDtlRow
 				.setText(FileTableColumnDtl.impactIndex, StringUtility
 						.checkIfNullThenEmpty(collectionMap.get("impact")));
-		fileDtlRow.setText(FileTableColumnDtl.descriptionIndex, StringUtility
-				.checkIfNullThenEmpty(collectionMap.get("description")));
-		fileDtlRow.setText(FileTableColumnDtl.solutionIndex, StringUtility
-				.checkIfNullThenEmpty(collectionMap.get("solution")));
 		fileDtlRow.setText(FileTableColumnDtl.complianceIndex, StringUtility
 				.checkIfNullThenEmpty(collectionMap.get("compliance")));
 		fileDtlRow
@@ -384,6 +388,8 @@ public class TreeTable {
 			traceDtlRow.setText(FileTableColumnDtl.traceIdIndex,
 					StringUtility.checkIfNullThenEmpty(trace));
 
+			traceDtlRow.setText(FileTableColumnDtl.descriptionIndex, vulnId);
+
 			LinkedHashMap stepMap = (LinkedHashMap) traceMap.get("steps");
 			List stepList = (List) stepMap.get("collection");
 			traceDtlRow.setBackground(device
@@ -392,15 +398,14 @@ public class TreeTable {
 				LinkedHashMap step = (LinkedHashMap) stepColllection;
 				TreeItem stepDtlRow = new TreeItem(traceDtlRow, SWT.NONE);
 				Map<String, String> stepDetailsMap = new HashMap<String, String>();
+
 				stepDtlRow.setText(FileTableColumnDtl.nameIndex,
 						StringUtility.checkIfNullThenEmpty(step.get("kind")));
 				stepDtlRow.setText(FileTableColumnDtl.fileIndex, StringUtility
 						.checkIfNullThenEmpty(step.get("filename")));
 
-				// String rowSelectedFileName = selectTreeItem.getText(
-				// FileTableColumnDtl.fileIndex).substring(
-				// selectTreeItem.getText(FileTableColumnDtl.fileIndex)
-				// .lastIndexOf(File.separator) + 1);
+				stepDtlRow.setText(FileTableColumnDtl.descriptionIndex, vulnId);
+				stepDtlRow.setText(FileTableColumnDtl.temptraceIdIndex, trace);
 				String file = StringUtility.checkIfNullThenEmpty(step
 						.get("filename"));
 				String stepId = StringUtility.checkIfNullThenEmpty(step
@@ -408,7 +413,6 @@ public class TreeTable {
 				fileNamePath.put(
 						file.substring(file.lastIndexOf(File.separator) + 1),
 						"");
-				// logger.info("++++++++++++++++fileNamePath " + fileNamePath);
 				stepDtlRow.setText(FileTableColumnDtl.locationIndex,
 						StringUtility.checkIfNullThenEmpty(step
 								.get("relative_line_number")));
@@ -424,13 +428,7 @@ public class TreeTable {
 				vulnDetailsMap.put(trace + "/" + stepId, stepDetailsMap);
 				stepDtlRow.setText(FileTableColumnDtl.stepIndex,
 						StringUtility.checkIfNullThenEmpty(step.get("id")));
-				// stepDtlRow.setText(FileTableColumnDtl.codeIndex, Base64Util
-				// .decode(StringUtility.checkIfNullThenEmpty(step
-				// .get("formatted_code"))));
-				//
-				// stepDtlRow.setText(FileTableColumnDtl.formattedCodeIndex,
-				// Base64Util.decode(StringUtility
-				// .checkIfNullThenEmpty(step.get("code"))));
+
 				stepDtlRow.setText(FileTableColumnDtl.startLineIndex,
 						StringUtility.checkIfNullThenEmpty(step
 								.get("start_line_number")));
@@ -443,7 +441,7 @@ public class TreeTable {
 		// \ }
 	}
 
-	private void createGroupFields(final Composite parent, Sash sash,
+	private void createCompositePanel(final Composite parent, Sash sash,
 			List<Object> splitterObjectList) {
 
 		Composite composite = new Composite(parent, SWT.None);
@@ -459,7 +457,7 @@ public class TreeTable {
 		Device device = Display.getCurrent();
 		// upComposite.setBackground(device.getSystemColor(SWT.COLOR_GRAY));
 		upComposite.setBackground(new Color(device, new RGB(240, 240, 240)));
-		Composite downComposite = new Composite(composite, SWT.BORDER);
+		Composite downComposite = new Composite(composite, SWT.None);
 		// Group group = new Group(parent, SWT.None);
 		openBtn = new Button(upComposite, SWT.NONE);
 		openBtn.setText("Open WIS File");
@@ -674,37 +672,42 @@ public class TreeTable {
 			public void widgetSelected(SelectionEvent e) {
 				selectTreeItem = (TreeItem) e.item;
 				itemSelection = true;
+
 				if (tabItemList.size() > 0) {
+					System.out.println("" + selectTreeItem);
+					if (selectTreeItem != null) {
 
-					String id = traceId
-							+ "/"
-							+ StringUtility.checkIfNullThenEmpty(selectTreeItem
-									.getText(FileTableColumnDtl.stepIndex));
-					vulnMap = vulnDetailsMap.get(id);
+						String idIndex = selectTreeItem
+								.getText(FileTableColumnDtl.descriptionIndex);
 
-					updateTabSection();
+						if (idIndex != null && !idIndex.isEmpty()) {
+							Map<String, String> map = vulnDetailsMap
+									.get(idIndex);
+							description = map
+									.get(FileTableColumnDtl.description);
+							solution = map.get(FileTableColumnDtl.solution);
+						}
+
+						String trace = selectTreeItem
+								.getText(FileTableColumnDtl.temptraceIdIndex);
+						trace = ((trace != null && !trace.isEmpty()) ? trace
+								: "");
+						if (!trace.isEmpty()) {
+							idIndex = trace
+									+ "/"
+									+ StringUtility
+											.checkIfNullThenEmpty(selectTreeItem
+													.getText(FileTableColumnDtl.stepIndex));
+							vulnMap = vulnDetailsMap.get(idIndex);
+						} else {
+							vulnMap = null;
+						}
+						updateTabSection();
+					}
+
+					// System.out.println("Expand={" + e.item + "}");
+
 				}
-			}
-		});
-
-		tree.addListener(SWT.Expand, new Listener() {
-			public void handleEvent(Event e) {
-
-				parentItem = (TreeItem) e.item;
-				String desc = parentItem
-						.getText(FileTableColumnDtl.descriptionIndex);
-				String sol = parentItem
-						.getText(FileTableColumnDtl.solutionIndex);
-				if (desc != null && !desc.isEmpty()) {
-					description = desc;
-				}
-				if (sol != null && !sol.isEmpty()) {
-					solution = sol;
-				}
-				String trace = parentItem
-						.getText(FileTableColumnDtl.traceIdIndex);
-				traceId = (trace != null && !trace.isEmpty()) ? trace : "";
-				// System.out.println("Expand={" + e.item + "}");
 			}
 		});
 
@@ -726,15 +729,9 @@ public class TreeTable {
 				if (firstFile != null) {
 					logger.info(" path " + dialog.getFilterPath() + " path2 "
 							+ dialog.getFileName());
-					filenameLbl.setText(dialog.getFilterPath() + File.separator
+
+					fillTable(dialog.getFilterPath() + File.separator
 							+ dialog.getFileName());
-					filenameLbl.setToolTipText(filenameLbl.getText());
-					// PropertyFileUtil.getProp().setProperty("jsonFile",
-					// filenameLbl.getText());
-					HashMap<String, String> msgMap = new HashMap<String, String>();
-					msgMap.put("jsonFile", filenameLbl.getText());
-					PropertyFileUtil.updatePropertyFile(msgMap);
-					createTable(parent);
 
 				}
 
@@ -748,6 +745,8 @@ public class TreeTable {
 
 		if (vulnMap != null && vulnMap.get(FileTableColumnDtl.code) != null) {
 			browse.setText(vulnMap.get(FileTableColumnDtl.code).toString());
+		} else {
+			browse.setText("");
 		}
 		Browser browseDesc = tabItemList.get(1);
 
@@ -782,20 +781,41 @@ public class TreeTable {
 
 	}
 
-	public void openPreviousJsonFile() {
-		logger.info(" invoke openPreviousJsonFile() ");
-		String jsonFile = PropertyFileUtil.getProp().getProperty("jsonFile");
-
-		if ((!jsonFile.isEmpty()) && jsonFile != null) {
-			logger.info("Loading previous json file " + jsonFile);
-
-			filenameLbl.setText(jsonFile);
+	// public void openPreviousJsonFile() {
+	// logger.info(" invoke openPreviousJsonFile() ");
+	// String jsonFile = PropertyFileUtil.getProp().getProperty("jsonFile");
+	//
+	// if ((!jsonFile.isEmpty()) && jsonFile != null) {
+	// logger.info("Loading previous json file " + jsonFile);
+	//
+	// filenameLbl.setText(jsonFile);
+	// createTable(parent);
+	//
+	// }
+	// }
+	public void fillTable(String fileName) {
+		if (fileName != null && !fileName.isEmpty()) {
+			filenameLbl.setText(fileName);
+			filenameLbl.setToolTipText(filenameLbl.getText());
+			// PropertyFileUtil.getProp().setProperty("jsonFile",
+			// filenameLbl.getText());
+			HashMap<String, String> msgMap = new HashMap<String, String>();
+			msgMap.put("jsonFile", filenameLbl.getText());
+			PropertyFileUtil.updatePropertyFile(msgMap);
 			createTable(parent);
 
-		}
 	}
-
+	}
 	public String getVersionAndDate() {
 		return PropertyFileUtil.getProp().getProperty("version");
 	}
+
+	public Label getFilenameLbl() {
+		return filenameLbl;
+	}
+
+	public void setFilenameLbl(Label filenameLbl) {
+		this.filenameLbl = filenameLbl;
+	}
+
 }

@@ -46,8 +46,10 @@ public interface FileTableColumnDtl {
 	int descriptionIndex = 17;
 	int solutionIndex = 18;
 	int complianceIndex = 19;
-	int formattedCodeIndex = 20;
+	int temptraceIdIndex = 20;
+	// int formattedCodeIndex = 20;
 	int stepIndex = 21;
+	
 
 	int idWidth = 55;
 	int statusWidth = 80;

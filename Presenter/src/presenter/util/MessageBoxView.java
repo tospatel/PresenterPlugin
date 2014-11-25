@@ -3,6 +3,8 @@ package presenter.util;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.PlatformUI;
 
 public class MessageBoxView {
 	private MessageBoxView() {
@@ -15,6 +17,7 @@ public class MessageBoxView {
 	 * @param msg
 	 */
 	public static void show(String msg) {
+		showMsgAtStatusBar(msg);
 		Shell shell = new Shell();
 		// shell.setSize(400, 300);
 		int style = SWT.ERROR_IO;
@@ -32,11 +35,11 @@ public class MessageBoxView {
 	 * @param msg
 	 * @param styleFlag
 	 */
-	public static void show(String msg, boolean styleFlag) {
-		Shell shell = new Shell();
-		// if(styleFlag)
-		msgBox(new MessageBox(shell), msg);
-
+	public static void showMsgAtStatusBar(String msg) {
+		IViewSite site = (IViewSite) PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow().getActivePage().getActivePart()
+				.getSite();
+		site.getActionBars().getStatusLineManager().setMessage(msg);
 	}
 
 	/**

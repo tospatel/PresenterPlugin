@@ -7,6 +7,8 @@ import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -131,6 +133,7 @@ public class CustomFileBrowseDialog extends Dialog {
 	private void createContents(final Shell shell,
 			final Map<String, String> fileNamePath,
 			final TreeItem selectTreeItem) {
+		MessageBoxView.showMsgAtStatusBar(message);
 		shell.setLayout(new GridLayout(2, true));
 		shell.setSize(400, 100);
 		shell.setLocation(400, 350);
@@ -142,8 +145,12 @@ public class CustomFileBrowseDialog extends Dialog {
 		data.horizontalSpan = 2;
 		label.setLayoutData(data);
 		label.setForeground(Display.getDefault().getSystemColor(
-				SWT.COLOR_DARK_RED));
+				SWT.COLOR_DARK_BLUE));
 		label.setAlignment(SWT.CENTER);
+
+		FontData[] fD = label.getFont().getFontData();
+		fD[0].setHeight(12);
+		label.setFont(new Font(Display.getDefault(), fD[0]));
 		// Display the input box
 		final Button text = new Button(shell, SWT.NONE);
 		data = new GridData(GridData.FILL_HORIZONTAL);
