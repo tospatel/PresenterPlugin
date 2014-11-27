@@ -243,7 +243,7 @@ public class TreeTable {
 
 			column.setText(colName[colIndex]);
 			column.setWidth(columnsWidth[colIndex]);
-			if (columnsWidth[colIndex] != 0) {
+			if (columnsWidth[colIndex] != 0 && colIndex != 2 && colIndex != 3) {
 				column.addSelectionListener(new SortTreeListener());
 			}
 		}

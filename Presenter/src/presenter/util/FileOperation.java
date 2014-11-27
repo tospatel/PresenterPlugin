@@ -372,6 +372,10 @@ public class FileOperation {
 				.get(FileTableColumnDtl.formattedCode).replaceAll("\\r", "")
 				.split("\\n");
 
+		while (lineDetails[line].replace("\t", "").startsWith("@")) {
+			line++;
+		}
+
 		lineContent.add(lineDetails[line]);
 		lineContent.add(line);
 

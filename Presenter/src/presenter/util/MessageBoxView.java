@@ -36,10 +36,13 @@ public class MessageBoxView {
 	 * @param styleFlag
 	 */
 	public static void showMsgAtStatusBar(String msg) {
+		if (PropertyFileUtil.getProp().getProperty("showMsgAtStatusBar")
+				.equalsIgnoreCase("y")) {
 		IViewSite site = (IViewSite) PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage().getActivePart()
 				.getSite();
 		site.getActionBars().getStatusLineManager().setMessage(msg);
+		}
 	}
 
 	/**
