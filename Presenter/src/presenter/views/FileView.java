@@ -40,6 +40,7 @@ public class FileView extends ViewPart implements IViewData {
 	private Composite parent;
 	private Label label;
 	private TreeTable treeTable;
+
 	// public FileView() {
 	// }
 	/**

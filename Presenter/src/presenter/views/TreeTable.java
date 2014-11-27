@@ -804,8 +804,9 @@ public class TreeTable {
 			PropertyFileUtil.updatePropertyFile(msgMap);
 			createTable(parent);
 
+		}
 	}
-	}
+
 	public String getVersionAndDate() {
 		return PropertyFileUtil.getProp().getProperty("version");
 	}

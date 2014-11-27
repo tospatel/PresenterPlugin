@@ -1,7 +1,5 @@
 package presenter.util;
 
-import java.util.List;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -17,13 +15,6 @@ public class Splitter {
 	private Splitter() {
 	}
 
-	public static void horizontalSplitter() {
-
-	}
-
-	public static void verticalSplitter(Composite composite,
-			List<Object> splitterObjectList) {
-	}
 
 	public static Sash getSash(Composite composite, int style) {
 		composite.setLayout(new FormLayout());

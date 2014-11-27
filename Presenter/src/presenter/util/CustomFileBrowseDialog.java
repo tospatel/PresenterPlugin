@@ -106,8 +106,7 @@ public class CustomFileBrowseDialog extends Dialog {
 	 * 
 	 * @return String
 	 */
-	public String open(Map<String, String> fileNamePath,
-			TreeItem selectTreeItem) {
+	public String open(Map<String, String> fileNamePath, TreeItem selectTreeItem) {
 		// Create the dialog window
 		Shell shell = new Shell(getParent(), getStyle());
 		shell.setText(getText());
