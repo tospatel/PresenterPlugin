@@ -104,12 +104,12 @@ public class FileExistenanceRecursive {
 				// }
 				if (aFile.isDirectory()) {
 					// logger.info("[" + aFile.getName() + "]");
-					// if ((!aFile.getName().equals("bin"))
-					// && (!aFile.getName().equals("classes"))
-					// && (!aFile.getName().equals("lib"))) {
+					if ((!aFile.getName().equals("bin"))
+							&& (!aFile.getName().equals("classes"))
+							&& (!aFile.getName().equals("lib"))) {
 					checkingDirectoryForMultipleFile(aFile.getAbsolutePath(),
 							level + 1, fileCheck);
-					// }
+					}
 				} else {
 					// fileExist = fileCheck.equals(aFile.getName());
 					// logger.info(aFile.getName() + " condition "
