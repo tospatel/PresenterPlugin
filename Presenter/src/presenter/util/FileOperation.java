@@ -747,8 +747,9 @@ public class FileOperation {
 		Shell shell = new Shell();
 		shell.setLocation(300, 250);
 		FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-		dialog.setFilterNames(new String[] { "Batch Files", "All Files (*.*)" });
-		dialog.setFilterExtensions(new String[] { "*.json", "*.*" }); // Windows
+		// dialog.setFilterNames(new String[] { "Batch Files", "All Files (*.*)"
+		// });
+		dialog.setFilterExtensions(new String[] { "*.*" }); // Windows
 		firstFile = dialog.open();
 		return (firstFile != null ? dialog.getFilterPath() + File.separator
 				+ dialog.getFileName() : "");
