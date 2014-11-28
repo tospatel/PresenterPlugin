@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IWorkbenchPage;
 
+import presenter.shared.AppConstant;
 import presenter.shared.FileTableColumnDtl;
 import presenter.util.customproject.CustomProjectNewWizard;
 
@@ -169,11 +170,15 @@ public class CustomFileBrowseDialog extends Dialog {
 
 					String fileName = file.substring(file
 							.lastIndexOf(File.separator) + 1);
-					String rowSelectedFileName = selectTreeItem.getText(
-							FileTableColumnDtl.fileIndex).substring(
-							selectTreeItem
-									.getText(FileTableColumnDtl.fileIndex)
-									.lastIndexOf(File.separator) + 1);
+					String rowSelectedFileName = selectTreeItem
+							.getText(FileTableColumnDtl.fileIndex)
+							.substring(
+									selectTreeItem
+											.getText(
+													FileTableColumnDtl.fileIndex)
+											.lastIndexOf(
+													OSValidatorUtil.isWindows() ? AppConstant.windowsSlash
+															: File.separator) + 1);
 					if (rowSelectedFileName.equals(fileName)) {
 
 						// uncomment

@@ -50,6 +50,7 @@ import presenter.util.Base64Util;
 import presenter.util.FileExistenanceRecursive;
 import presenter.util.FileOperation;
 import presenter.util.JsonUtil;
+import presenter.util.OSValidatorUtil;
 import presenter.util.PropertyFileUtil;
 import presenter.util.SortTreeListener;
 import presenter.util.Splitter;
@@ -349,8 +350,7 @@ public class TreeTable {
 		Map<String, String> descSolMap = new HashMap<String, String>();
 
 		Device device = Display.getCurrent();
-		fileDtlRow.setBackground(device
-				.getSystemColor(SWT.COLOR_TITLE_FOREGROUND));
+		fileDtlRow.setBackground(device.getSystemColor(SWT.COLOR_BLACK));
 		fileDtlRow.setForeground(device.getSystemColor(SWT.COLOR_WHITE));
 		String vulnId = StringUtility.checkIfNullThenEmpty(collectionMap
 				.get("id"));
@@ -410,9 +410,11 @@ public class TreeTable {
 						.get("filename"));
 				String stepId = StringUtility.checkIfNullThenEmpty(step
 						.get("id"));
+
 				fileNamePath.put(
-						file.substring(file.lastIndexOf(File.separator) + 1),
-						"");
+						file.substring(file.lastIndexOf((OSValidatorUtil
+								.isWindows() ? AppConstant.windowsSlash
+								: File.separator)) + 1), "");
 				stepDtlRow.setText(FileTableColumnDtl.locationIndex,
 						StringUtility.checkIfNullThenEmpty(step
 								.get("relative_line_number")));

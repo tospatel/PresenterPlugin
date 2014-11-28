@@ -82,22 +82,26 @@ public class FileOperation {
 						fileExist = FileExistenanceRecursive
 								.checkingDirectoryForFile(
 										project.getLocation().toString(),
-										fileName.substring(fileName
-												.lastIndexOf(File.separator) + 1));
+										fileName.substring(fileName.lastIndexOf((OSValidatorUtil
+												.isWindows() ? AppConstant.windowsSlash
+												: File.separator)) + 1));
 					} else {
 						fileExist = fileNamePath
-								.get(fileName.substring(fileName
-										.lastIndexOf(File.separator) + 1));
+								.get(fileName.substring(fileName.lastIndexOf((OSValidatorUtil
+										.isWindows() ? AppConstant.windowsSlash
+										: File.separator)) + 1));
 					}
 
 					if (fileExist != null
 							&& (!fileExist.isEmpty())
-							&& fileExist.startsWith(project.getLocation()
-									.toString())) {
+							&& (fileExist.startsWith(project.getLocation()
+									.toString()) || OSValidatorUtil.isWindows())) {
 						fullPath = fileExist;
-						fileExist = fileExist.substring(project.getLocation()
-								.toString().lastIndexOf(File.separatorChar),
-								fileExist.length());
+
+						fileExist = fileExist.substring((project.getLocation()
+								.toString().lastIndexOf(OSValidatorUtil
+								.isWindows() ? AppConstant.windowsSlash
+								: File.separator)), fileExist.length());
 
 						break;
 					}
@@ -289,10 +293,14 @@ public class FileOperation {
 
 	public static void checkExternalFile(TreeItem selectTreeItem,
 			Map<String, String> fileNamePath, IWorkbenchPage wbPage) {
-		String rowSelectedFileName = selectTreeItem.getText(
-				FileTableColumnDtl.fileIndex).substring(
-				selectTreeItem.getText(FileTableColumnDtl.fileIndex)
-						.lastIndexOf(File.separator) + 1);
+		String rowSelectedFileName = selectTreeItem
+				.getText(FileTableColumnDtl.fileIndex)
+				.substring(
+						selectTreeItem
+								.getText(FileTableColumnDtl.fileIndex)
+								.lastIndexOf(
+										(OSValidatorUtil.isWindows() ? AppConstant.windowsSlash
+												: File.separator)) + 1);
 		// String filePath = null;
 		// Get the root of the workspace
 		// IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -314,6 +322,7 @@ public class FileOperation {
 					rowSelectedFileName);
 		}
 		if (filePath != null && (!filePath.isEmpty())) {
+			fileNamePath.put(rowSelectedFileName, filePath);
 			CustomProjectNewWizard customProject = new CustomProjectNewWizard(
 					filePath, fileNamePath, selectTreeItem);
 			// customProject.addPage();

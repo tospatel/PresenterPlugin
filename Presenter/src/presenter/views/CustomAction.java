@@ -39,9 +39,9 @@ public class CustomAction implements IWorkbenchWindowActionDelegate {
 					.getActiveWorkbenchWindow().getActivePage()
 					.showView(FileView.ID);
 
-			FileView viewSetter = (FileView) view;
-			viewSetter
-					.setMessage("/Users/sunilpatel/Documents/whitehat/json/VulnMultiple.wis");
+			// FileView viewSetter = (FileView) view;
+			// viewSetter
+			// .setMessage("/Users/sunilpatel/Documents/whitehat/json/VulnMultiple.wis");
 
 		} catch (Exception e) {
 			logger.error(e);

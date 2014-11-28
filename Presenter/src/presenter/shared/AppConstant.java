@@ -6,4 +6,5 @@ public interface AppConstant {
 	String logFolder = "log";
 	String logFileName = "whsplugin.log";
 	String codeDetails = "codeDetails";
+	String windowsSlash = "/";
 }

@@ -31,58 +31,101 @@ public class FileExistenanceRecursive {
 	 */
 	public static String checkingDirectoryForFile(String dirPath,
 			String fileCheck) {
-		logger.info("fileCheck===========> " + fileCheck);
-		boolean recursiveSearch = true;
-		Object fileFilter = new String(fileCheck);
-		boolean wait = false;
-		javaxt.io.Directory directory = new Directory(dirPath);
-		// Initiate search
-		java.util.List results = directory.getChildren(recursiveSearch,
-				fileFilter, wait);
-		while (true) {
-			Object item;
-			synchronized (results) {
+		logger.info("fileCheck===========> " + fileCheck);// OSValidatorUtil.isMac()
+															// ||
+		if (OSValidatorUtil.isMac() || OSValidatorUtil.isUnix()
+				|| OSValidatorUtil.isSolaris()) {
+			boolean recursiveSearch = true;
+			Object fileFilter = new String(fileCheck);
+			boolean wait = false;
+			javaxt.io.Directory directory = new Directory(dirPath);
+			// Initiate search
+			java.util.List results = directory.getChildren(recursiveSearch,
+					fileFilter, wait);
+			while (true) {
+				Object item;
+				synchronized (results) {
 
-				// Wait for files/directories to be added to the list
-				while (results.isEmpty()) {
-					try {
-						results.wait();
-					} catch (InterruptedException e) {
-						break;
+					// Wait for files/directories to be added to the list
+					while (results.isEmpty()) {
+						try {
+							results.wait();
+						} catch (InterruptedException e) {
+							logger.error(e);
+							break;
+						}
 					}
+
+					// Grab the next available file/directory from the list
+					item = results.remove(0);
+					results.notifyAll();
 				}
 
-				// Grab the next available file/directory from the list
-				item = results.remove(0);
-				results.notifyAll();
+				// Do something with the file/directory
+				if (item != null) {
+
+					if (item instanceof javaxt.io.File) {
+						javaxt.io.File file = (javaxt.io.File) item;
+						String fileNm = file.toString();
+						logger.info("file=== "
+								+ file.toString()
+								+ "  >>>   "
+								+ (fileNm.toString().substring(fileNm
+										.lastIndexOf(File.separator) + 1)));
+						if (fileCheck.equals(fileNm.toString().substring(
+								fileNm.lastIndexOf(File.separator) + 1))) {
+							logger.info("File Found===========> "
+									+ file.toString());
+							return file.toString();
+						}
+					} else {
+						javaxt.io.Directory dir = (javaxt.io.Directory) item;
+					}
+				} else { // Item is null. This is our queue that the search is
+							// done!
+					break;
+				}
 			}
+			return "";
+		} else {
+			return checkingDirectoryForFileForWindows(dirPath, fileCheck);
+		}
+	}
 
-			// Do something with the file/directory
-			if (item != null) {
+	public static String checkingDirectoryForFileForWindows(String dirPath,
+			String fileCheck) {
 
-				if (item instanceof javaxt.io.File) {
-					javaxt.io.File file = (javaxt.io.File) item;
-					String fileNm = file.toString();
-					logger.info("file=== "
-							+ file.toString()
-							+ "  >>>   "
-							+ (fileNm.toString().substring(fileNm
-									.lastIndexOf(File.separator) + 1)));
-					if (fileCheck.equals(fileNm.toString().substring(
-							fileNm.lastIndexOf(File.separator) + 1))) {
-						logger.info("File Found===========> " + file.toString());
-						return file.toString();
+		File dir = new File(dirPath);
+		File[] firstLevelFiles = dir.listFiles();
+		if (firstLevelFiles != null && firstLevelFiles.length > 0) {
+			for (File aFile : firstLevelFiles) {
+
+				if (aFile.isDirectory()) {
+					if ((!aFile.getName().equals("bin"))
+							&& (!aFile.getName().equals("classes"))
+							&& (!aFile.getName().equals("lib"))) {
+						String fileExist = checkingDirectoryForFileForWindows(
+								aFile.getAbsolutePath(), fileCheck);
+						if (fileExist != null && !fileExist.isEmpty()) {
+							return fileExist;
+						}
 					}
 				} else {
-					javaxt.io.Directory dir = (javaxt.io.Directory) item;
+
+					if (fileCheck.equals(aFile.getName())) {
+
+						logger.info("File Found ====> " + aFile.getName()
+								+ "   " + aFile.getAbsolutePath());
+
+						return aFile.getAbsolutePath();
+					}
 				}
-			} else { // Item is null. This is our queue that the search is done!
-				break;
+
+
 			}
 		}
 		return "";
 	}
-
 	/**
 	 * Populating path for multiple file
 	 * 
