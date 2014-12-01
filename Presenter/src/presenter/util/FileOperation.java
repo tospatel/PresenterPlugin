@@ -95,7 +95,8 @@ public class FileOperation {
 					if (fileExist != null
 							&& (!fileExist.isEmpty())
 							&& (fileExist.startsWith(project.getLocation()
-									.toString()) || OSValidatorUtil.isWindows())) {
+									.toString()))) {// ||
+													// OSValidatorUtil.isWindows()
 						fullPath = fileExist;
 
 						fileExist = fileExist.substring((project.getLocation()
