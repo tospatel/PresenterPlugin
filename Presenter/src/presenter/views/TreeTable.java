@@ -351,7 +351,7 @@ public class TreeTable {
 
 		Device device = Display.getCurrent();
 		fileDtlRow.setBackground(device.getSystemColor(SWT.COLOR_BLACK));
-		fileDtlRow.setForeground(device.getSystemColor(SWT.COLOR_WHITE));
+		fileDtlRow.setForeground(device.getSystemColor(SWT.COLOR_GRAY));
 		String vulnId = StringUtility.checkIfNullThenEmpty(collectionMap
 				.get("id"));
 

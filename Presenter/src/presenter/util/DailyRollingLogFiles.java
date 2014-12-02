@@ -2,10 +2,10 @@ package presenter.util;
 
 import java.io.File;
 
-import org.apache.log4j.DailyRollingFileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.apache.log4j.RollingFileAppender;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
@@ -23,7 +23,8 @@ public class DailyRollingLogFiles {
 
 			// creates pattern layout
 			PatternLayout layout = new PatternLayout();
-			String conversionPattern = "[%p] %d %c %M - %m%n";
+			// String conversionPattern = "[%p] %d %c %M - %m%n";
+			String conversionPattern = "[%p] [%d{ISO8601}] [%F:%L]  %m%n";
 			layout.setConversionPattern(conversionPattern);
 
 			IProject project = CustomProjectSupport.createProject(
@@ -32,7 +33,7 @@ public class DailyRollingLogFiles {
 			DeleteDirAndFilesUtil.deleteFilesInFolder(project.getLocation()
 					+ File.separator + AppConstant.logFolder);
 			// creates daily rolling file appender
-			DailyRollingFileAppender rollingAppender = new DailyRollingFileAppender();
+			RollingFileAppender rollingAppender = new RollingFileAppender();
 			// rollingAppender.setFile(project.getFullPath() + "app.log");
 			IWorkspace workspace = ResourcesPlugin.getWorkspace();
 			String workSpacePath = workspace.getRoot().getLocation().toFile()
@@ -41,10 +42,13 @@ public class DailyRollingLogFiles {
 			rollingAppender.setFile(workSpacePath + project.getFullPath()
 					+ File.separator + AppConstant.logFolder + File.separator
 					+ AppConstant.logFileName);
-			rollingAppender.setDatePattern("'.'yyyy-MM-dd");
+			// rollingAppender.setDatePattern("'.'yyyy-MM-dd");
+			//rollingAppender
 			rollingAppender.setLayout(layout);
+			rollingAppender.setThreshold(Level.ALL);
+			rollingAppender.setMaxFileSize("10MB");
 			rollingAppender.activateOptions();
-
+			rollingAppender.setAppend(true);
 			project.refreshLocal(IResource.DEPTH_INFINITE, null);
 
 			// configures the root logger
@@ -53,7 +57,7 @@ public class DailyRollingLogFiles {
 			rootLogger.addAppender(rollingAppender);
 
 			// creates a custom logger and log messages
-			logger = Logger.getLogger(DailyRollingLogFiles.class);
+			logger = Logger.getLogger(RollingFileAppender.class);
 
 		} catch (Exception e) {
 			// logger.error(e);
