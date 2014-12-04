@@ -94,8 +94,8 @@ public class FileOperation {
 
 					if (fileExist != null
 							&& (!fileExist.isEmpty())
-							&& (getPathSlashUpdateOSWise(fileExist)
-									.startsWith(getPathSlashUpdateOSWise(project
+							&& (getPathSlashUpdatedOSWise(fileExist)
+									.startsWith(getPathSlashUpdatedOSWise(project
 											.getLocation().toString())))) {// ||
 																			// OSValidatorUtil.isWindows()
 						fullPath = fileExist;
@@ -866,7 +866,7 @@ public class FileOperation {
 		return null;
 	}
 
-	public static String getPathSlashUpdateOSWise(String path) {
+	public static String getPathSlashUpdatedOSWise(String path) {
 		if (OSValidatorUtil.isWindows()) {
 			if (path.indexOf("/") > 0)
 				return path.replace("/", File.separator);
