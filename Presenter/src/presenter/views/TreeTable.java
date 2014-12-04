@@ -345,13 +345,16 @@ public class TreeTable {
 		if (previousFileNamePath != null) {
 			for (Map.Entry<String, String> entry : previousFileNamePath
 					.entrySet()) {
-				if ((!entry.getValue().isEmpty())
-						&& fileNamePath.containsKey(entry.getKey())) {
-					fileNamePath.put(entry.getKey(), entry.getValue());
-					System.out.println("Key : " + entry.getKey() + " Value : "
-							+ entry.getValue());
-				}
+				if (!entry.getValue().isEmpty()) {
 
+					// if (fileNamePath.containsKey(entry.getKey())) {
+					fileNamePath.put(entry.getKey(), entry.getValue());
+					// System.out.println("Key : " + entry.getKey()
+					// + " Value : " + entry.getValue());
+					// } else {
+					//
+					// }
+				}
 			}
 			previousFileNamePath = null;
 		}
