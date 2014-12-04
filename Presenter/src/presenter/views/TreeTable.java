@@ -90,6 +90,7 @@ public class TreeTable {
 	private int totalVulnSize = 0, itemFillInTable = 0;
 	private Composite parent;
 	private Map<String, String> fileNamePath = null;
+	private Map<String, String> previousFileNamePath = null;
 	private Boolean fileNamePathUpdated = false;
 	private ArrayList<Browser> tabItemList = new ArrayList<Browser>();
 	final static Logger logger = Logger.getLogger(TreeTable.class);
@@ -259,6 +260,9 @@ public class TreeTable {
 	 */
 	public void setFileDetailList(final Issue fileList) {
 		tree.removeAll();
+		if (fileNamePath != null) {
+			previousFileNamePath = fileNamePath;
+		}
 		fileNamePath = new HashMap<String, String>();
 		if (fileList != null) {
 
@@ -330,10 +334,27 @@ public class TreeTable {
 				}
 				logger.info("Map value " + fileNamePath);
 				fileNamePathUpdated = true;
+
 			}
 		};
 		fileDetailsMapThread.start();
 		// fileDetailsMapThread.join();
+	}
+
+	private void setPreviousMapPath() {
+		if (previousFileNamePath != null) {
+			for (Map.Entry<String, String> entry : previousFileNamePath
+					.entrySet()) {
+				if ((!entry.getValue().isEmpty())
+						&& fileNamePath.containsKey(entry.getKey())) {
+					fileNamePath.put(entry.getKey(), entry.getValue());
+					System.out.println("Key : " + entry.getKey() + " Value : "
+							+ entry.getValue());
+				}
+
+			}
+			previousFileNamePath = null;
+		}
 	}
 
 	/**
@@ -650,6 +671,7 @@ public class TreeTable {
 							+ "===ItemFillInTable===> " + itemFillInTable);
 					if (fileNamePathUpdated == false
 							&& itemFillInTable == totalVulnSize) {
+						setPreviousMapPath();
 						checkPathForMultipleFile();
 					}
 
@@ -739,6 +761,26 @@ public class TreeTable {
 
 			}
 		});
+
+		// tree.addListener(SWT.Expand, new Listener() {
+		// public void handleEvent(Event e) {
+		// // parentItem = (TreeItem) e.item;
+		// // previousFileNamePath = fileNamePath;
+		// // more elegant way
+		// if (previousFileNamePath != null) {
+		// for (Map.Entry<String, String> entry : previousFileNamePath
+		// .entrySet()) {
+		// if ((!entry.getValue().isEmpty())
+		// && fileNamePath.containsKey(entry.getKey())) {
+		// fileNamePath.put(entry.getKey(), entry.getValue());
+		// System.out.println("Key : " + entry.getKey()
+		// + " Value : " + entry.getValue());
+		// }
+		//
+		// }
+		// }
+		// }
+		// });
 
 	}
 
