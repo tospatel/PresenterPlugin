@@ -132,25 +132,26 @@ public class TreeTable {
 
 		Sash sash = null;
 		Composite childComp;
-		
-		if(OSValidatorUtil.isUnix()){
+
+		if (OSValidatorUtil.isUnix()) {
 			composite.setLayout(new GridLayout(2, false));
-			childComp=new Composite(composite, SWT.NONE);
-			childComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			childComp = new Composite(composite, SWT.NONE);
+			childComp
+					.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 			childComp.setLayout(new GridLayout(2, true));
-		}else{
-			sash=Splitter.getSash(composite, SWT.VERTICAL);
-			childComp=composite;
+		} else {
+			sash = Splitter.getSash(composite, SWT.VERTICAL);
+			childComp = composite;
 		}
-		
+
 		createCompositePanel(childComp, sash, splitterObjectList);
 
-		if(OSValidatorUtil.isUnix()){
+		if (OSValidatorUtil.isUnix()) {
 			setSnippetForUnix(childComp, sash, splitterObjectList);
-		}else{
+		} else {
 			setSnippet(childComp, sash, splitterObjectList);
 		}
-		
+
 		// Splitter.verticalSplitter(composite, splitterObjectList);
 		setTableColumn();
 		createListner();
@@ -172,16 +173,14 @@ public class TreeTable {
 		tree.setHeaderVisible(true);
 		tree.setLinesVisible(true);
 	}
-	
+
 	public void setSnippetForUnix(Composite parent, Sash sash,
 			List<Object> splitterObjectList) {
-		
-		
-		Group	rightGroup =new Group(parent, SWT.FILL);
-			// Group group = new Group(parent, SWT.NONE);
-			tabFolder = new TabFolder(rightGroup, SWT.FILL);
-	
-		
+
+		Group rightGroup = new Group(parent, SWT.FILL);
+		// Group group = new Group(parent, SWT.NONE);
+		tabFolder = new TabFolder(rightGroup, SWT.FILL);
+
 		for (int loopIndex = 0; loopIndex < 3; loopIndex++) {
 			TabItem tabItem = new TabItem(tabFolder, SWT.NULL);
 			String header = "";
@@ -205,12 +204,10 @@ public class TreeTable {
 
 			tabItem.setText(header);
 
-			
-				Text sText = new Text(tabFolder, SWT.None);
-				sText.setText("1234");
-				tabItem.setControl(sText);
-				tabItemList.add(sText);
-			
+			Text sText = new Text(tabFolder, SWT.None);
+			sText.setText("");
+			tabItem.setControl(sText);
+			tabItemList.add(sText);
 
 		}
 
@@ -235,6 +232,7 @@ public class TreeTable {
 		rightGroup.setLayoutData(gridData);
 
 	}
+
 	public void setSnippet(Composite parent, Sash sash,
 			List<Object> splitterObjectList) {
 
@@ -680,12 +678,11 @@ public class TreeTable {
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		// gridData.grabExcessVerticalSpace = true;
 		composite.setLayoutData(gridData);
-		if(!OSValidatorUtil.isUnix()){
+		if (!OSValidatorUtil.isUnix()) {
 			composite.setLayoutData(Splitter.getLeftFormData(sash));
 		}
 		// Add the Restore Weights functionality
 
-		
 	}
 
 	/**
@@ -849,9 +846,10 @@ public class TreeTable {
 
 	public void updateTabSection() {
 		if (OSValidatorUtil.isUnix()) {
-			((Text)tabItemList.get(0)).setText(vulnMap.get(FileTableColumnDtl.code).toString());
-			((Text)tabItemList.get(1)).setText(description);
-			((Text)tabItemList.get(2)).setText(solution);
+			((Text) tabItemList.get(0)).setText(vulnMap.get(
+					FileTableColumnDtl.code).toString());
+			((Text) tabItemList.get(1)).setText(description);
+			((Text) tabItemList.get(2)).setText(solution);
 		} else {
 
 			Browser browse = (Browser) tabItemList.get(0);
@@ -895,6 +893,7 @@ public class TreeTable {
 			}
 		}
 	}
+
 	// public void openPreviousJsonFile() {
 	// logger.info(" invoke openPreviousJsonFile() ");
 	// String jsonFile = PropertyFileUtil.getProp().getProperty("jsonFile");
