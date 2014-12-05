@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Shell;
@@ -92,7 +93,7 @@ public class TreeTable {
 	private Map<String, String> fileNamePath = null;
 	private Map<String, String> previousFileNamePath = null;
 	private Boolean fileNamePathUpdated = false;
-	private ArrayList<Browser> tabItemList = new ArrayList<Browser>();
+	private ArrayList<Object> tabItemList = new ArrayList<Object>();
 	final static Logger logger = Logger.getLogger(TreeTable.class);
 	private TabFolder tabFolder = null;
 
@@ -129,10 +130,27 @@ public class TreeTable {
 		logger.info(" Calling addChildControls ");
 		List<Object> splitterObjectList = new ArrayList<Object>();
 
-		Sash sash = Splitter.getSash(composite, SWT.VERTICAL);
-		createCompositePanel(composite, sash, splitterObjectList);
+		Sash sash = null;
+		Composite childComp;
+		
+		if(OSValidatorUtil.isUnix()){
+			composite.setLayout(new GridLayout(2, false));
+			childComp=new Composite(composite, SWT.NONE);
+			childComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			childComp.setLayout(new GridLayout(2, true));
+		}else{
+			sash=Splitter.getSash(composite, SWT.VERTICAL);
+			childComp=composite;
+		}
+		
+		createCompositePanel(childComp, sash, splitterObjectList);
 
-		setSnippet(composite, sash, splitterObjectList);
+		if(OSValidatorUtil.isUnix()){
+			setSnippetForUnix(childComp, sash, splitterObjectList);
+		}else{
+			setSnippet(childComp, sash, splitterObjectList);
+		}
+		
 		// Splitter.verticalSplitter(composite, splitterObjectList);
 		setTableColumn();
 		createListner();
@@ -154,7 +172,69 @@ public class TreeTable {
 		tree.setHeaderVisible(true);
 		tree.setLinesVisible(true);
 	}
+	
+	public void setSnippetForUnix(Composite parent, Sash sash,
+			List<Object> splitterObjectList) {
+		
+		
+		Group	rightGroup =new Group(parent, SWT.FILL);
+			// Group group = new Group(parent, SWT.NONE);
+			tabFolder = new TabFolder(rightGroup, SWT.FILL);
+	
+		
+		for (int loopIndex = 0; loopIndex < 3; loopIndex++) {
+			TabItem tabItem = new TabItem(tabFolder, SWT.NULL);
+			String header = "";
+			switch (loopIndex) {
+			case 0:
+				header = "Snippet";
+				break;
+			// case 1:
+			// header = "Live";
+			// break;
+			// case 2:
+			// header = "Diff";
+			// break;
+			case 1:
+				header = "Description";
+				break;
+			case 2:
+				header = "Solution";
+				break;
+			}
 
+			tabItem.setText(header);
+
+			
+				Text sText = new Text(tabFolder, SWT.None);
+				sText.setText("1234");
+				tabItem.setControl(sText);
+				tabItemList.add(sText);
+			
+
+		}
+
+		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1,
+				1));
+		// Create the second text box and attach its left edge
+		// to the sash
+		// Text two = new Text(composite, SWT.BORDER);
+
+		Label version = new Label(rightGroup, SWT.BOTTOM | SWT.RIGHT
+				| SWT.BORDER);
+		version.setText(getVersionAndDate());
+		version.setLayoutData(new GridData(SWT.FILL, SWT.None, true, false, 1,
+				1));
+
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = 1;
+		rightGroup.setLayout(gridLayout);
+		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+		// gridData.heightHint = 66;
+		// gridData.widthHint = 500;
+		rightGroup.setLayoutData(gridData);
+
+	}
 	public void setSnippet(Composite parent, Sash sash,
 			List<Object> splitterObjectList) {
 
@@ -597,35 +677,15 @@ public class TreeTable {
 		grid1Layout.numColumns = 1;
 		// grid1Layout.verticalSpacing=true;
 		composite.setLayout(grid1Layout);
-		GridData gridData = new GridData(SWT.FILL, SWT.None, true, false);
+		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		// gridData.grabExcessVerticalSpace = true;
 		composite.setLayoutData(gridData);
-		composite.setLayoutData(Splitter.getLeftFormData(sash));
+		if(!OSValidatorUtil.isUnix()){
+			composite.setLayoutData(Splitter.getLeftFormData(sash));
+		}
 		// Add the Restore Weights functionality
 
-		// Change the width of the sashes
-		// sashForm.setSashWidth(5);
-		// sashForm.setRegion(region);
-		// sashForm.setWeights(new int[] { 2, 5 });
-		// Change the width of the sashes
-		// topSash.SASH_WIDTH = 20;
-
-		// Change the color used to paint the sashes
-		// sashForm.setBackground(parent.getDisplay().getSystemColor(
-		// SWT.COLOR_GREEN));
-		// sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		// Change the color used to paint the sashes
-		// sashForm.setBackground(parent.getDisplay().getSystemColor(
-		// SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
-
-		// Set the relative weights for the buttons
-		// topSash.setWeights(new int[] { 3, 2 });
-		// sashForm.set
-		// composite.setLayout(new FormLayout());
-		// Sash sashHorizontal = Splitter.getSash(composite, SWT.HORIZONTAL);
-		// upComposite.setLayoutData(Splitter.getLeftFormData(sashHo));
-		// downComposite.setLayoutData(Splitter.getRightFormData(sash));
-		// splitterObjectList.add(leftComposite);
+		
 	}
 
 	/**
@@ -788,46 +848,53 @@ public class TreeTable {
 	}
 
 	public void updateTabSection() {
-		Browser browse = tabItemList.get(0);
-
-		if (vulnMap != null && vulnMap.get(FileTableColumnDtl.code) != null) {
-			browse.setText(vulnMap.get(FileTableColumnDtl.code).toString());
+		if (OSValidatorUtil.isUnix()) {
+			((Text)tabItemList.get(0)).setText(vulnMap.get(FileTableColumnDtl.code).toString());
+			((Text)tabItemList.get(1)).setText(description);
+			((Text)tabItemList.get(2)).setText(solution);
 		} else {
-			browse.setText("");
+
+			Browser browse = (Browser) tabItemList.get(0);
+
+			if (vulnMap != null && vulnMap.get(FileTableColumnDtl.code) != null) {
+				browse.setText(vulnMap.get(FileTableColumnDtl.code).toString());
+			} else {
+				browse.setText("");
+			}
+			Browser browseDesc = (Browser) tabItemList.get(1);
+
+			if (description != null) {
+				String ss = new String();
+				ss = "<script>" + "var aa=\"" + description + "\";"
+				// + "alert(aa);"
+						+ "document.write(aa);" + "</script>";
+
+				browseDesc.setText(ss);
+			}
+			// Prabhu: the description and solution has tags that are in
+			// unicode,
+			// and either, we need the JSON pasrse to decode them
+			// or I used a shortcut to use Javascript to decode and display them
+			// on
+			// the page
+
+			Browser browseSolution = (Browser) tabItemList.get(2);
+			// browseSolution.setText("<pre>"
+			// + selectTreeItem.getText(FileTableColumnDtl.solutionIndex)
+			// .replace("\n", "<br/>") + "<pre/>");
+
+			if (solution != null) {
+				browseSolution.setText(solution);
+				// logger.info(JSONUtils.convertToJavaIdentifier(parentItem
+				// .getText(FileTableColumnDtl.solutionIndex)));
+				String ss1 = new String();
+				ss1 = "<script>" + "var aa=\"" + solution + "\";"
+				// + "alert(aa);"
+						+ "document.write(aa);" + "</script>";
+				browseSolution.setText(ss1);
+			}
 		}
-		Browser browseDesc = tabItemList.get(1);
-
-		if (description != null) {
-			String ss = new String();
-			ss = "<script>" + "var aa=\"" + description + "\";"
-			// + "alert(aa);"
-					+ "document.write(aa);" + "</script>";
-
-			browseDesc.setText(ss);
-		}
-		// Prabhu: the description and solution has tags that are in unicode,
-		// and either, we need the JSON pasrse to decode them
-		// or I used a shortcut to use Javascript to decode and display them on
-		// the page
-
-		Browser browseSolution = tabItemList.get(2);
-		// browseSolution.setText("<pre>"
-		// + selectTreeItem.getText(FileTableColumnDtl.solutionIndex)
-		// .replace("\n", "<br/>") + "<pre/>");
-
-		if (solution != null) {
-			browseSolution.setText(solution);
-			// logger.info(JSONUtils.convertToJavaIdentifier(parentItem
-			// .getText(FileTableColumnDtl.solutionIndex)));
-			String ss1 = new String();
-			ss1 = "<script>" + "var aa=\"" + solution + "\";"
-			// + "alert(aa);"
-					+ "document.write(aa);" + "</script>";
-			browseSolution.setText(ss1);
-		}
-
 	}
-
 	// public void openPreviousJsonFile() {
 	// logger.info(" invoke openPreviousJsonFile() ");
 	// String jsonFile = PropertyFileUtil.getProp().getProperty("jsonFile");
