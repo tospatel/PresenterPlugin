@@ -146,6 +146,8 @@ public class TreeTable {
 
 		createCompositePanel(childComp, sash, splitterObjectList);
 
+		setTableColumn();
+		createListner();
 		if (OSValidatorUtil.isUnix()) {
 			setSnippetForUnix(childComp, sash, splitterObjectList);
 		} else {
@@ -153,8 +155,7 @@ public class TreeTable {
 		}
 
 		// Splitter.verticalSplitter(composite, splitterObjectList);
-		setTableColumn();
-		createListner();
+
 		// fillTable(fileNm);
 		// openPreviousJsonFile();
 	}
@@ -204,10 +205,19 @@ public class TreeTable {
 
 			tabItem.setText(header);
 
-			Text sText = new Text(tabFolder, SWT.None);
-			sText.setText("");
-			tabItem.setControl(sText);
-			tabItemList.add(sText);
+			// Text sText = new Text(tabFolder, SWT.None);
+			// sText.setText("1234");
+			// tabItem.setControl(sText);
+			// tabItemList.add(sText);
+			try {
+
+				Browser browser = new Browser(tabFolder, SWT.NONE);
+				browser.setText("");
+				tabItem.setControl(browser);
+				tabItemList.add(browser);
+			} catch (Exception e) {
+				logger.error(e);
+			}
 
 		}
 
@@ -845,12 +855,14 @@ public class TreeTable {
 	}
 
 	public void updateTabSection() {
-		if (OSValidatorUtil.isUnix()) {
-			((Text) tabItemList.get(0)).setText(vulnMap.get(
-					FileTableColumnDtl.code).toString());
-			((Text) tabItemList.get(1)).setText(description);
-			((Text) tabItemList.get(2)).setText(solution);
-		} else {
+		// if (OSValidatorUtil.isUnix()) {
+		// if(vulnMap!=null){
+		// ((Text)tabItemList.get(0)).setText(vulnMap.get(FileTableColumnDtl.code).toString());
+		// }
+		// ((Text)tabItemList.get(1)).setText(description);
+		// ((Text)tabItemList.get(2)).setText(solution);
+		// } else {
+		try {
 
 			Browser browse = (Browser) tabItemList.get(0);
 
@@ -891,7 +903,10 @@ public class TreeTable {
 						+ "document.write(aa);" + "</script>";
 				browseSolution.setText(ss1);
 			}
+		} catch (Exception e) {
+			logger.error(e);
 		}
+		// }
 	}
 
 	// public void openPreviousJsonFile() {

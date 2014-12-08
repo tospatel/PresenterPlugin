@@ -4,13 +4,21 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.ProgressBar;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 import presenter.util.DailyRollingLogFiles;
+import presenter.util.OSValidatorUtil;
 import presenter.util.PropertyFileUtil;
 import presenter.util.customproject.CustomProjectSupport;
 
@@ -49,6 +57,12 @@ public class FileView extends ViewPart implements IViewData {
 
 	public void createPartControl(Composite parent) {
 
+		showMainWindow(parent);
+		splashWindow(Display.getDefault(), parent);
+
+	}
+
+	public void showMainWindow(Composite parent) {
 		this.parent = parent;
 		label = new Label(parent, SWT.NONE); // label is a field
 		// label.setVisible(false);
@@ -90,4 +104,92 @@ public class FileView extends ViewPart implements IViewData {
 		});
 	}
 
+	public void splashWindow(final Display display, final Composite parent) {
+
+		// final Display display = new Display();
+
+		final int[] count = (OSValidatorUtil.isUnix() ? new int[] { 4 }
+				: new int[] { 2 });
+		// final Image image = new Image(display, 200, 300);
+		final Image image = new Image(display, 10, 120);
+		image.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+		final Shell splash = new Shell(SWT.ON_TOP);
+		// splash.setMinimumSize(300, 150);30
+		Label titleLabel = new Label(splash, SWT.NONE);
+
+		titleLabel
+				.setText("This Custom Plugin is created by WhiteHat Security");
+		// titleLabel.setSize(70, 150);
+		titleLabel.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+		titleLabel.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+		String title = "";
+		if (OSValidatorUtil.isUnix()) {
+			title += "\n On Ubuntu once need to execute following command using Terminal\n  sudo apt-get install libwebkitgtk-1.0-0";
+			Label commandLabel = new Label(splash, SWT.NONE);
+
+			commandLabel.setText(title);
+			commandLabel.setSize(70, 120);
+			commandLabel.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
+			commandLabel.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+		}
+
+		// Device device = Display.getCurrent();
+
+		final ProgressBar bar = new ProgressBar(splash, SWT.NONE);
+		bar.setMaximum(count[0]);
+		Label label = new Label(splash, SWT.NONE);
+		label.setImage(image);
+		label.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+		// label.setSize(300, 100);
+		// label.setText("Custom Plugin by WhiteHat");
+		FormLayout layout = new FormLayout();
+		splash.setLayout(layout);
+		FormData labelData = new FormData();
+		labelData.right = new FormAttachment(100, 0);
+		labelData.bottom = new FormAttachment(100, 0);
+		label.setLayoutData(labelData);
+		FormData progressData = new FormData();
+		progressData.left = new FormAttachment(0, 5);
+		progressData.right = new FormAttachment(100, -5);
+		progressData.bottom = new FormAttachment(100, -5);
+		bar.setLayoutData(progressData);
+		splash.pack();
+		Rectangle splashRect = splash.getBounds();
+		Rectangle displayRect = display.getBounds();
+		int x = (displayRect.width - splashRect.width) / 2;
+		int y = (displayRect.height - splashRect.height) / 2;
+		splash.setLocation(x, y);
+		splash.open();
+		display.asyncExec(new Runnable() {
+			public void run() {
+				System.out.println("executed");
+				// Shell[] shells = new Shell[count[0]];
+				for (int i = 0; i < count[0]; i++) {
+					// shells[i] = new Shell(display);
+					// shells[i].setSize(300, 300);
+					// shells[i].addListener(SWT.Close, new Listener() {
+					// public void handleEvent(Event e) {
+					// --count[0];
+					// }
+					// });
+					bar.setSelection(i + 1);
+					try {
+						Thread.sleep(1000);
+					} catch (Throwable e) {
+					}
+				}
+				splash.close();
+				image.dispose();
+				// for (int i = 0; i < count[0]; i++) {
+				// shells[i].open();
+				// }
+
+			}
+		});
+		// while (count[0] != 0) {
+		// if (!display.readAndDispatch())
+		// display.sleep();
+		// }
+		// display.dispose();
+	}
 }
