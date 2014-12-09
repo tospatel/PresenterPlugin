@@ -599,7 +599,7 @@ public class TreeTable {
 						this.getClass()
 								.getClassLoader()
 								.getResourceAsStream(
-										"presenter/views/whslogoalpha.png"));
+								"presenter/views/logo/whslogoalpha.png"));
 				e.gc.drawImage(image, -5, 0);
 			}
 		});

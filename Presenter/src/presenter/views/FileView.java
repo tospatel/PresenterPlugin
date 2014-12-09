@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
@@ -18,7 +19,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 import presenter.util.DailyRollingLogFiles;
-import presenter.util.OSValidatorUtil;
 import presenter.util.PropertyFileUtil;
 import presenter.util.customproject.CustomProjectSupport;
 
@@ -108,30 +108,44 @@ public class FileView extends ViewPart implements IViewData {
 
 		// final Display display = new Display();
 
-		final int[] count = (OSValidatorUtil.isUnix() ? new int[] { 4 }
-				: new int[] { 2 });
+		final int[] count = new int[] { 3 };
 		// final Image image = new Image(display, 200, 300);
-		final Image image = new Image(display, 10, 120);
+		final Image image = new Image(display, this
+				.getClass()
+				.getClassLoader()
+				.getResourceAsStream(
+						"presenter/views/logo/whitehat_security_logo.jpg"));
 		image.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-		final Shell splash = new Shell(SWT.ON_TOP);
-		// splash.setMinimumSize(300, 150);30
-		Label titleLabel = new Label(splash, SWT.NONE);
 
-		titleLabel
-				.setText("This Custom Plugin is created by WhiteHat Security");
+		final Shell splash = new Shell(SWT.None);
+		splash.setMinimumSize(150, 150);
+		// Label titleLabel = new Label(splash, SWT.NONE);
+
+		// titleLabel
+		// .setText("This Custom Plugin is created by WhiteHat Security");
+		// titleLabel.setSize(150, 20);
+		// titleLabel.setLayoutData(new GridData(SWT.FILL, SWT.None, true,
+		// false));
+		FontData[] fD = label.getFont().getFontData();
+		fD[0].setHeight(18);
+		// titleLabel.setFont(new Font(display, fD[0]));
+		// splash.setBackgroundMode(SWT.INHERIT_FORCE);
 		// titleLabel.setSize(70, 150);
-		titleLabel.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
-		titleLabel.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-		String title = "";
-		if (OSValidatorUtil.isUnix()) {
-			title += "\n On Ubuntu once need to execute following command using Terminal\n  sudo apt-get install libwebkitgtk-1.0-0";
-			Label commandLabel = new Label(splash, SWT.NONE);
-
-			commandLabel.setText(title);
-			commandLabel.setSize(70, 120);
-			commandLabel.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
-			commandLabel.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-		}
+		// titleLabel.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
+		// titleLabel.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+		// String title = "";
+		// if (OSValidatorUtil.isUnix()) {
+		// title +=
+		// "\n On Ubuntu once need to execute following command using Terminal\n  sudo apt-get install libwebkitgtk-1.0-0";
+		// Label commandLabel = new Label(splash, SWT.NONE);
+		//
+		// commandLabel.setText(title);
+		// commandLabel.setSize(70, 20);
+		// commandLabel.setFont(new Font(display, fD[0]));
+		// commandLabel.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
+		//
+		// commandLabel.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+		// }
 
 		// Device device = Display.getCurrent();
 
@@ -140,7 +154,7 @@ public class FileView extends ViewPart implements IViewData {
 		Label label = new Label(splash, SWT.NONE);
 		label.setImage(image);
 		label.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-		// label.setSize(300, 100);
+		label.setSize(350, 300);
 		// label.setText("Custom Plugin by WhiteHat");
 		FormLayout layout = new FormLayout();
 		splash.setLayout(layout);
