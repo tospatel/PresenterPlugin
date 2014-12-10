@@ -33,8 +33,11 @@ public class FileExistenanceRecursive {
 			String fileCheck) {
 		logger.info("fileCheck===========> " + fileCheck);// OSValidatorUtil.isMac()
 															// ||
-		if (OSValidatorUtil.isMac() || OSValidatorUtil.isUnix()
-				|| OSValidatorUtil.isSolaris()) {
+															// if
+															// (OSValidatorUtil.isMac()
+															// ||
+															// OSValidatorUtil.isUnix()
+		// || OSValidatorUtil.isSolaris()) {
 			boolean recursiveSearch = true;
 			Object fileFilter = new String(fileCheck);
 			boolean wait = false;
@@ -87,9 +90,9 @@ public class FileExistenanceRecursive {
 				}
 			}
 			return "";
-		} else {
-			return checkingDirectoryForFileForWindows(dirPath, fileCheck);
-		}
+		// } else {
+		// return checkingDirectoryForFileForWindows(dirPath, fileCheck);
+		// }
 	}
 
 	public static String checkingDirectoryForFileForWindows(String dirPath,

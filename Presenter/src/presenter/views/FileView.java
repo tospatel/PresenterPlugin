@@ -108,7 +108,7 @@ public class FileView extends ViewPart implements IViewData {
 
 		// final Display display = new Display();
 
-		final int[] count = new int[] { 3 };
+		final int[] count = new int[] { 2 };
 		// final Image image = new Image(display, 200, 300);
 		final Image image = new Image(display, this
 				.getClass()
@@ -154,7 +154,8 @@ public class FileView extends ViewPart implements IViewData {
 		Label label = new Label(splash, SWT.NONE);
 		label.setImage(image);
 		label.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-		label.setSize(350, 300);
+		label.setSize(200, 200);
+
 		// label.setText("Custom Plugin by WhiteHat");
 		FormLayout layout = new FormLayout();
 		splash.setLayout(layout);
